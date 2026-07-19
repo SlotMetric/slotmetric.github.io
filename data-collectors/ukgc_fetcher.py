@@ -65,6 +65,7 @@ def fetch_and_process_ukgc():
                         casino_entry = {
                             "id": f"uk-{license_num}",
                             "brand_name": brand_name,
+                            "is_featured": False,
                             "official_url": website if website.startswith('http') else f"https://{website}",
                             "affiliate_url": "",
                             "license_number": license_num,
@@ -89,11 +90,12 @@ def fetch_and_process_ukgc():
     except Exception as e:
         print(f"❌ Processing Error occurred: {e}")
         create_fallback_data()
+
 def create_fallback_data():
-    """רשת ביטחון ל-SEO: יצירת נתונים בסיסיים הכוללים בונוסים, קישורים וסימון ממומנים"""
+    """רשת ביטחון ל-SEO: יצירת נתונים מיושרים הכוללים רשימת TOP 10 מלאה עם בונוסים ואפיליאייט"""
     print("ℹ️ Fallback: Creating baseline data with custom affiliate metrics.")
     
-        fallback_casinos = [
+    fallback_casinos = [
         {"name": "Duelz Casino", "license": "48695", "url": "https://duelz.com", "bonus": "100% Bonus up to £100 + 100 Free Spins", "rtp": "96.5%", "affiliate": "https://casino.org", "is_featured": True},
         {"name": "888casino", "license": "39028", "url": "https://888casino.com", "bonus": "100% Up To £100 + 88 Free Spins", "rtp": "96.6%", "affiliate": "", "is_featured": False},
         {"name": "Bet365 Casino", "license": "39521", "url": "https://bet365.com", "bonus": "Stake £10, Get 50 Free Spins", "rtp": "97.2%", "affiliate": "", "is_featured": False},
@@ -105,14 +107,13 @@ def create_fallback_data():
         {"name": "Mr Green UK", "license": "39260", "url": "https://mrgreen.com", "bonus": "100 Free Spins on Lucky Mr Green", "rtp": "96.4%", "affiliate": "", "is_featured": False},
         {"name": "Rizk Casino", "license": "56438", "url": "https://rizk.com", "bonus": "100% Bonus up to £50 + 50 Spins", "rtp": "96.8%", "affiliate": "", "is_featured": False}
     ]
-
     
     list_data = []
     for item in fallback_casinos:
         list_data.append({
             "id": f"uk-{item['license']}",
             "brand_name": item['name'],
-            "is_featured": item['is_featured'],  # <-- מעביר את הסטטוס למסד הנתונים
+            "is_featured": item['is_featured'],
             "official_url": item['url'],
             "affiliate_url": item['affiliate'],
             "license_number": item['license'],
