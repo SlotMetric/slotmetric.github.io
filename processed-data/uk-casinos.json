@@ -2,6 +2,7 @@
   {
     "id": "uk-39028",
     "brand_name": "888casino",
+    "is_featured": false,
     "official_url": "https://888casino.com",
     "affiliate_url": "",
     "license_number": "39028",
@@ -20,6 +21,7 @@
   {
     "id": "uk-39521",
     "brand_name": "Bet365 Casino",
+    "is_featured": false,
     "official_url": "https://bet365.com",
     "affiliate_url": "",
     "license_number": "39521",
@@ -38,6 +40,7 @@
   {
     "id": "uk-48695",
     "brand_name": "Duelz Casino",
+    "is_featured": true,
     "official_url": "https://duelz.com",
     "affiliate_url": "https://casino.org",
     "license_number": "48695",

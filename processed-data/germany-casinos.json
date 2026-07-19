@@ -1,56 +1,59 @@
 [
   {
-    "id": "de-GGL-2024-DE",
-    "brand_name": "Tipico Casino",
+    "id": "de-GGL-2024-DE-10023",
+    "brand_name": "Tipico Games",
+    "is_featured": true,
     "official_url": "https://tipico.de",
     "affiliate_url": "",
-    "license_number": "GGL-2024-DE",
+    "license_number": "GGL-2024-DE-10023",
     "last_updated": "2026-07-19",
     "seo_meta": {
-      "card_title": "Tipico Casino Germany License & RTP Metrics",
-      "alt_text": "Tipico Casino official legal german casino logo"
+      "card_title": "Tipico Games Germany License & RTP Metrics",
+      "alt_text": "Tipico Games official legal german casino logo"
     },
     "features": {
-      "bonus_text": null,
-      "wagering_requirement": null,
-      "average_rtp": null,
-      "payout_speed": null
+      "bonus_text": "100% Bonus bis zu 100€",
+      "wagering_requirement": "30x",
+      "average_rtp": "96.4%",
+      "payout_speed": "1-2 Tage"
     }
   },
   {
-    "id": "de-GGL-2023-DE",
-    "brand_name": "bwin Casino",
+    "id": "de-GGL-2023-DE-10045",
+    "brand_name": "bwin Slots",
+    "is_featured": false,
     "official_url": "https://bwin.de",
     "affiliate_url": "",
-    "license_number": "GGL-2023-DE",
+    "license_number": "GGL-2023-DE-10045",
     "last_updated": "2026-07-19",
     "seo_meta": {
-      "card_title": "bwin Casino Germany License & RTP Metrics",
-      "alt_text": "bwin Casino official legal german casino logo"
+      "card_title": "bwin Slots Germany License & RTP Metrics",
+      "alt_text": "bwin Slots official legal german casino logo"
     },
     "features": {
-      "bonus_text": null,
-      "wagering_requirement": null,
-      "average_rtp": null,
-      "payout_speed": null
+      "bonus_text": "50 Freispiele ohne Risiko",
+      "wagering_requirement": "30x",
+      "average_rtp": "96.8%",
+      "payout_speed": "1-2 Tage"
     }
   },
   {
-    "id": "de-GGL-2024-GER",
-    "brand_name": "Wildz Germany",
+    "id": "de-GGL-2024-GER-10089",
+    "brand_name": "Wildz Deutschland",
+    "is_featured": false,
     "official_url": "https://wildz.de",
     "affiliate_url": "",
-    "license_number": "GGL-2024-GER",
+    "license_number": "GGL-2024-GER-10089",
     "last_updated": "2026-07-19",
     "seo_meta": {
-      "card_title": "Wildz Germany Germany License & RTP Metrics",
-      "alt_text": "Wildz Germany official legal german casino logo"
+      "card_title": "Wildz Deutschland Germany License & RTP Metrics",
+      "alt_text": "Wildz Deutschland official legal german casino logo"
     },
     "features": {
-      "bonus_text": null,
-      "wagering_requirement": null,
-      "average_rtp": null,
-      "payout_speed": null
+      "bonus_text": "100% Bonus bis zu 300€ + 200 Freispiele",
+      "wagering_requirement": "30x",
+      "average_rtp": "96.5%",
+      "payout_speed": "1-2 Tage"
     }
   }
 ]
