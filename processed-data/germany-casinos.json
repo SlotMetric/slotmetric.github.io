@@ -1,0 +1,56 @@
+[
+  {
+    "id": "de-GGL-2024-DE",
+    "brand_name": "Tipico Casino",
+    "official_url": "https://tipico.de",
+    "affiliate_url": "",
+    "license_number": "GGL-2024-DE",
+    "last_updated": "2026-07-19",
+    "seo_meta": {
+      "card_title": "Tipico Casino Germany License & RTP Metrics",
+      "alt_text": "Tipico Casino official legal german casino logo"
+    },
+    "features": {
+      "bonus_text": null,
+      "wagering_requirement": null,
+      "average_rtp": null,
+      "payout_speed": null
+    }
+  },
+  {
+    "id": "de-GGL-2023-DE",
+    "brand_name": "bwin Casino",
+    "official_url": "https://bwin.de",
+    "affiliate_url": "",
+    "license_number": "GGL-2023-DE",
+    "last_updated": "2026-07-19",
+    "seo_meta": {
+      "card_title": "bwin Casino Germany License & RTP Metrics",
+      "alt_text": "bwin Casino official legal german casino logo"
+    },
+    "features": {
+      "bonus_text": null,
+      "wagering_requirement": null,
+      "average_rtp": null,
+      "payout_speed": null
+    }
+  },
+  {
+    "id": "de-GGL-2024-GER",
+    "brand_name": "Wildz Germany",
+    "official_url": "https://wildz.de",
+    "affiliate_url": "",
+    "license_number": "GGL-2024-GER",
+    "last_updated": "2026-07-19",
+    "seo_meta": {
+      "card_title": "Wildz Germany Germany License & RTP Metrics",
+      "alt_text": "Wildz Germany official legal german casino logo"
+    },
+    "features": {
+      "bonus_text": null,
+      "wagering_requirement": null,
+      "average_rtp": null,
+      "payout_speed": null
+    }
+  }
+]
