@@ -89,9 +89,8 @@ def fetch_and_process_ukgc():
     except Exception as e:
         print(f"❌ Processing Error occurred: {e}")
         create_fallback_data()
-
 def create_fallback_data():
-    """רשת ביטחון ל-SEO: יצירת נתונים בסיסיים הכוללים בונוסים וקישורי אפיליאייט אמיתיים"""
+    """רשת ביטחון ל-SEO: יצירת נתונים בסיסיים הכוללים בונוסים, קישורים וסימון ממומנים"""
     print("ℹ️ Fallback: Creating baseline data with custom affiliate metrics.")
     
     fallback_casinos = [
@@ -101,7 +100,8 @@ def create_fallback_data():
             "url": "https://888casino.com",
             "bonus": "100% Up To £100 + 88 Free Spins",
             "rtp": "96.6%",
-            "affiliate": ""
+            "affiliate": "",
+            "is_featured": False
         },
         {
             "name": "Bet365 Casino", 
@@ -109,7 +109,8 @@ def create_fallback_data():
             "url": "https://bet365.com",
             "bonus": "Stake £10, Get 50 Free Spins",
             "rtp": "97.2%",
-            "affiliate": ""
+            "affiliate": "",
+            "is_featured": False
         },
         {
             "name": "Duelz Casino", 
@@ -117,7 +118,8 @@ def create_fallback_data():
             "url": "https://duelz.com",
             "bonus": "100% Bonus up to £100 + 100 Free Spins",
             "rtp": "96.5%",
-            "affiliate": "https://casino.org"
+            "affiliate": "https://casino.org",
+            "is_featured": True  # <-- השינוי שמסמן אותו כממומן פרימיום בראש הדף!
         }
     ]
     
@@ -126,6 +128,7 @@ def create_fallback_data():
         list_data.append({
             "id": f"uk-{item['license']}",
             "brand_name": item['name'],
+            "is_featured": item['is_featured'],  # <-- מעביר את הסטטוס למסד הנתונים
             "official_url": item['url'],
             "affiliate_url": item['affiliate'],
             "license_number": item['license'],
