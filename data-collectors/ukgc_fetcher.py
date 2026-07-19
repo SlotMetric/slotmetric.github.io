@@ -93,35 +93,19 @@ def create_fallback_data():
     """רשת ביטחון ל-SEO: יצירת נתונים בסיסיים הכוללים בונוסים, קישורים וסימון ממומנים"""
     print("ℹ️ Fallback: Creating baseline data with custom affiliate metrics.")
     
-    fallback_casinos = [
-        {
-            "name": "888casino", 
-            "license": "39028", 
-            "url": "https://888casino.com",
-            "bonus": "100% Up To £100 + 88 Free Spins",
-            "rtp": "96.6%",
-            "affiliate": "",
-            "is_featured": False
-        },
-        {
-            "name": "Bet365 Casino", 
-            "license": "39521", 
-            "url": "https://bet365.com",
-            "bonus": "Stake £10, Get 50 Free Spins",
-            "rtp": "97.2%",
-            "affiliate": "",
-            "is_featured": False
-        },
-        {
-            "name": "Duelz Casino", 
-            "license": "48695", 
-            "url": "https://duelz.com",
-            "bonus": "100% Bonus up to £100 + 100 Free Spins",
-            "rtp": "96.5%",
-            "affiliate": "https://casino.org",
-            "is_featured": True  # <-- השינוי שמסמן אותו כממומן פרימיום בראש הדף!
-        }
+        fallback_casinos = [
+        {"name": "Duelz Casino", "license": "48695", "url": "https://duelz.com", "bonus": "100% Bonus up to £100 + 100 Free Spins", "rtp": "96.5%", "affiliate": "https://casino.org", "is_featured": True},
+        {"name": "888casino", "license": "39028", "url": "https://888casino.com", "bonus": "100% Up To £100 + 88 Free Spins", "rtp": "96.6%", "affiliate": "", "is_featured": False},
+        {"name": "Bet365 Casino", "license": "39521", "url": "https://bet365.com", "bonus": "Stake £10, Get 50 Free Spins", "rtp": "97.2%", "affiliate": "", "is_featured": False},
+        {"name": "PlayOJO", "license": "39326", "url": "https://playojo.com", "bonus": "Get 50 Free Spins - No Wagering", "rtp": "96.9%", "affiliate": "", "is_featured": False},
+        {"name": "All British Casino", "license": "38790", "url": "https://allbritishcasino.com", "bonus": "100% Welcome Bonus up to £100", "rtp": "97.1%", "affiliate": "", "is_featured": False},
+        {"name": "Casimba Casino", "license": "52894", "url": "https://casimba.com", "bonus": "100% Match up to £200 + 50 Spins", "rtp": "96.7%", "affiliate": "", "is_featured": False},
+        {"name": "LeoVegas UK", "license": "39198", "url": "https://leovegas.co.uk", "bonus": "Up to £100 + 50 Free Spins", "rtp": "96.0%", "affiliate": "", "is_featured": False},
+        {"name": "Grosvenor Casino", "license": "38750", "url": "https://grosvenorcasinos.com", "bonus": "Deposit £20, Play With £50", "rtp": "96.2%", "affiliate": "", "is_featured": False},
+        {"name": "Mr Green UK", "license": "39260", "url": "https://mrgreen.com", "bonus": "100 Free Spins on Lucky Mr Green", "rtp": "96.4%", "affiliate": "", "is_featured": False},
+        {"name": "Rizk Casino", "license": "56438", "url": "https://rizk.com", "bonus": "100% Bonus up to £50 + 50 Spins", "rtp": "96.8%", "affiliate": "", "is_featured": False}
     ]
+
     
     list_data = []
     for item in fallback_casinos:
