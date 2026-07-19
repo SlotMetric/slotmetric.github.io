@@ -4,7 +4,6 @@ import json
 TEMPLATE_PATH = "templates/index.html"
 OUTPUT_DIR = "public"
 
-# הגדרות מנוע ה-SEO והלוגיקה המודולרית של SlotMetric לכל מדינה
 COUNTRIES_CONFIG = {
     "uk": {
         "country_name": "United Kingdom",
@@ -25,7 +24,7 @@ COUNTRIES_CONFIG = {
         "lang_code": "nl",
         "data_file": "processed-data/netherlands-casinos.json",
         "page_title": "Legale Online Casino's in Nederland | SlotMetric",
-        "meta_description": "Bekijk de officiële Ksa kansspelvergunninghouders. Betrouwbare online casino's, live RTP-data en bonussen op SlotMetric."
+        "meta_description": "Bekijk de officiële Ksa kansspelvergunninghouders. Betrouwbare online casino's, live RTP-data und bonussen op SlotMetric."
     }
 }
 
@@ -36,7 +35,6 @@ def load_template():
         return f.read()
 
 def build_casino_cards(json_path):
-    # הגנה: אם קובץ הנתונים עדיין לא נוצר על ידי ה-Collector, נציג הודעה זמנית ולא נשבור את האתר
     if not os.path.exists(json_path):
         print(f"⚠️ Data file not found for: {json_path}. Creating placeholder card.")
         return """
@@ -56,13 +54,9 @@ def build_casino_cards(json_path):
         
     cards_html = []
     
-    # מגבילים ל-100 המפעילים הראשונים לטובת מהירות טעינה וביצועי Core Web Vitals של גוגל
     for casino in casinos[:100]: 
-        # שלב ב': הכנה לבונוסים ו-RTP. אם הם ריקים כרגע, המערכת תציג טקסט אלטרנטיבי חכם
         bonus = casino.get("features", {}).get("bonus_text") or "Reviewing Bonus Terms"
         rtp = casino.get("features", {}).get("average_rtp") or "Calculating Metrics"
-        
-        # בחירת הקישור: אם הזנו אפיליאייט נשתמש בו, אחרת נפנה זמנית לאתר הרשמי
         target_url = casino.get("affiliate_url") or casino.get("official_url") or "#"
         
         card = f"""
@@ -83,21 +77,16 @@ def build_casino_cards(json_path):
     return "\n".join(cards_html)
 
 def main():
-    print("Code Execution: Starting static website build for SlotMetric...")
+    print("Starting static website build for SlotMetric...")
     template = load_template()
     
-    # יצירת תיקיית public הראשית אם אינה קיימת
     if not os.path.exists(OUTPUT_DIR):
         os.makedirs(OUTPUT_DIR)
     
-    # רצה בלולאה ומחוללת עמוד SEO עצמאי לכל מדינה
     for code, config in COUNTRIES_CONFIG.items():
         print(f"📦 Processing country layout for: {config['country_name']} ({code})")
-        
-        # 1. יצירת קוד ה-HTML של הכרטיסיות
         cards_html = build_casino_cards(config["data_file"])
         
-        # 2. הזרקת הנתונים וה-Meta Tags לתוך ה-Template
         page_content = template
         page_content = page_content.replace("{{PAGE_TITLE}}", config["page_title"])
         page_content = page_content.replace("{{META_DESCRIPTION}}", config["meta_description"])
@@ -106,21 +95,20 @@ def main():
         page_content = page_content.replace("{{COUNTRY_NAME}}", config["country_name"])
         page_content = page_content.replace("{{CASINO_CARDS}}", cards_html)
         
-        # 3. יצירת תיקיית המדינה (למשל public/uk/ או public/de/) ושמירת הקובץ
-        country_dir = os.path.join(OUTPUT_DIR, code)
-        if not os.path.exists(country_dir):
-            os.makedirs(country_dir)
+        # השינוי הקריטי ל-SEO: עמוד בריטניה נכתב ישירות כדף הבית הראשי של האתר!
+        if code == "uk":
+            output_file_path = os.path.join(OUTPUT_DIR, "index.html")
+        else:
+            # שאר המדינות מקבלות תת-תיקייה משלהן כרגיל (למשל public/de/index.html)
+            country_dir = os.path.join(OUTPUT_DIR, code)
+            if not os.path.exists(country_dir):
+                os.makedirs(country_dir)
+            output_file_path = os.path.join(country_dir, "index.html")
             
-        output_file_path = os.path.join(country_dir, "index.html")
         with open(output_file_path, "w", encoding="utf-8") as f:
             f.write(page_content)
             
-    # SEO Redirect: יצירת דף אינדקס ראשי בכתובת המקורית שמפנה אוטומטית לעמוד של בריטניה
-    # בצורה זו הגולש שמגיע ל-slotmetric.github.io יועבר מיד לעמוד הפעיל
-    with open(os.path.join(OUTPUT_DIR, "index.html"), "w", encoding="utf-8") as f:
-        f.write('<html><head><meta http-equiv="refresh" content="0; url=/uk/"></head><body>Redirecting to SlotMetric...</body></html>')
-
-    print("✅ Success: All static pages have been successfully generated in the /public folder.")
+    print("✅ Success: Static layout built successfully without redirect home page.")
 
 if __name__ == "__main__":
     main()
