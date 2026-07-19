@@ -1,5 +1,24 @@
 [
   {
+    "id": "uk-48695",
+    "brand_name": "Duelz Casino",
+    "is_featured": true,
+    "official_url": "https://duelz.com",
+    "affiliate_url": "https://casino.org",
+    "license_number": "48695",
+    "last_updated": "2026-07-19",
+    "seo_meta": {
+      "card_title": "Duelz Casino UK Review",
+      "alt_text": "Verified logo"
+    },
+    "features": {
+      "bonus_text": "100% Bonus up to £100 + 100 Free Spins",
+      "wagering_requirement": "30x",
+      "average_rtp": "96.5%",
+      "payout_speed": "1-2 Days"
+    }
+  },
+  {
     "id": "uk-39028",
     "brand_name": "888casino",
     "is_featured": false,
@@ -38,21 +57,135 @@
     }
   },
   {
-    "id": "uk-48695",
-    "brand_name": "Duelz Casino",
-    "is_featured": true,
-    "official_url": "https://duelz.com",
-    "affiliate_url": "https://casino.org",
-    "license_number": "48695",
+    "id": "uk-39326",
+    "brand_name": "PlayOJO",
+    "is_featured": false,
+    "official_url": "https://playojo.com",
+    "affiliate_url": "",
+    "license_number": "39326",
     "last_updated": "2026-07-19",
     "seo_meta": {
-      "card_title": "Duelz Casino UK Review",
+      "card_title": "PlayOJO UK Review",
       "alt_text": "Verified logo"
     },
     "features": {
-      "bonus_text": "100% Bonus up to £100 + 100 Free Spins",
+      "bonus_text": "Get 50 Free Spins - No Wagering",
       "wagering_requirement": "30x",
-      "average_rtp": "96.5%",
+      "average_rtp": "96.9%",
+      "payout_speed": "1-2 Days"
+    }
+  },
+  {
+    "id": "uk-38790",
+    "brand_name": "All British Casino",
+    "is_featured": false,
+    "official_url": "https://allbritishcasino.com",
+    "affiliate_url": "",
+    "license_number": "38790",
+    "last_updated": "2026-07-19",
+    "seo_meta": {
+      "card_title": "All British Casino UK Review",
+      "alt_text": "Verified logo"
+    },
+    "features": {
+      "bonus_text": "100% Welcome Bonus up to £100",
+      "wagering_requirement": "30x",
+      "average_rtp": "97.1%",
+      "payout_speed": "1-2 Days"
+    }
+  },
+  {
+    "id": "uk-52894",
+    "brand_name": "Casimba Casino",
+    "is_featured": false,
+    "official_url": "https://casimba.com",
+    "affiliate_url": "",
+    "license_number": "52894",
+    "last_updated": "2026-07-19",
+    "seo_meta": {
+      "card_title": "Casimba Casino UK Review",
+      "alt_text": "Verified logo"
+    },
+    "features": {
+      "bonus_text": "100% Match up to £200 + 50 Spins",
+      "wagering_requirement": "30x",
+      "average_rtp": "96.7%",
+      "payout_speed": "1-2 Days"
+    }
+  },
+  {
+    "id": "uk-39198",
+    "brand_name": "LeoVegas UK",
+    "is_featured": false,
+    "official_url": "https://leovegas.co.uk",
+    "affiliate_url": "",
+    "license_number": "39198",
+    "last_updated": "2026-07-19",
+    "seo_meta": {
+      "card_title": "LeoVegas UK UK Review",
+      "alt_text": "Verified logo"
+    },
+    "features": {
+      "bonus_text": "Up to £100 + 50 Free Spins",
+      "wagering_requirement": "30x",
+      "average_rtp": "96.0%",
+      "payout_speed": "1-2 Days"
+    }
+  },
+  {
+    "id": "uk-38750",
+    "brand_name": "Grosvenor Casino",
+    "is_featured": false,
+    "official_url": "https://grosvenorcasinos.com",
+    "affiliate_url": "",
+    "license_number": "38750",
+    "last_updated": "2026-07-19",
+    "seo_meta": {
+      "card_title": "Grosvenor Casino UK Review",
+      "alt_text": "Verified logo"
+    },
+    "features": {
+      "bonus_text": "Deposit £20, Play With £50",
+      "wagering_requirement": "30x",
+      "average_rtp": "96.2%",
+      "payout_speed": "1-2 Days"
+    }
+  },
+  {
+    "id": "uk-39260",
+    "brand_name": "Mr Green UK",
+    "is_featured": false,
+    "official_url": "https://mrgreen.com",
+    "affiliate_url": "",
+    "license_number": "39260",
+    "last_updated": "2026-07-19",
+    "seo_meta": {
+      "card_title": "Mr Green UK UK Review",
+      "alt_text": "Verified logo"
+    },
+    "features": {
+      "bonus_text": "100 Free Spins on Lucky Mr Green",
+      "wagering_requirement": "30x",
+      "average_rtp": "96.4%",
+      "payout_speed": "1-2 Days"
+    }
+  },
+  {
+    "id": "uk-56438",
+    "brand_name": "Rizk Casino",
+    "is_featured": false,
+    "official_url": "https://rizk.com",
+    "affiliate_url": "",
+    "license_number": "56438",
+    "last_updated": "2026-07-19",
+    "seo_meta": {
+      "card_title": "Rizk Casino UK Review",
+      "alt_text": "Verified logo"
+    },
+    "features": {
+      "bonus_text": "100% Bonus up to £50 + 50 Spins",
+      "wagering_requirement": "30x",
+      "average_rtp": "96.8%",
       "payout_speed": "1-2 Days"
     }
   }
