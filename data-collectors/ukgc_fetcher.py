@@ -99,11 +99,33 @@ def create_fallback_data():
         return
         
     print("ℹ️ Fallback: Creating initial baseline data for UK market.")
-    fallback_casinos = [
-        {"name": "888casino", "license": "39028", "url": "https://888casino.com"},
-        {"name": "Bet365 Casino", "license": "39521", "url": "https://bet365.com"},
-        {"name": "Duelz Casino", "license": "48695", "url": "https://duelz.com"}
+    f    fallback_casinos = [
+        {
+            "name": "888casino", 
+            "license": "39028", 
+            "url": "https://888casino.com",
+            "bonus": "100% Up To £100 + 88 Free Spins",
+            "rtp": "96.6%",
+            "affiliate": ""
+        },
+        {
+            "name": "Bet365 Casino", 
+            "license": "39521", 
+            "url": "https://bet365.com",
+            "bonus": "Stake £10, Get 50 Free Spins",
+            "rtp": "97.2%",
+            "affiliate": ""
+        },
+        {
+            "name": "Duelz Casino", 
+            "license": "48695", 
+            "url": "https://duelz.com",
+            "bonus": "100% Bonus up to £100 + 100 Free Spins", # בונוס אמיתי מהאפיליאייט!
+            "rtp": "96.5%",
+            "affiliate": "https://casino.org" # קישור השותפים שלכם!
+        }
     ]
+
     
     list_data = []
     for item in fallback_casinos:
