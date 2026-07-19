@@ -13,6 +13,12 @@ permissions:
 jobs:
   update-and-deploy:
     runs-on: ubuntu-latest
+    
+    # הוספת הגדרת הסביבה הרשמית של גיטהב פייג'ס לפתרון השגיאה
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       
       - name: Checkout Repository
@@ -28,9 +34,8 @@ jobs:
           echo "📥 Fetching UKGC Data..."
           python data-collectors/ukgc_fetcher.py
           
-          # בשלב הבא כשנפעיל את גרמניה, נסיר מפה את הסימון #
-          # echo "📥 Fetching GGL Germany Data..."
-          # python data-collectors/ggl_fetcher.py
+          echo "📥 Fetching GGL Germany Data..."
+          python data-collectors/ggl_fetcher.py
 
       - name: Commit and Push Updated Data
         run: |
