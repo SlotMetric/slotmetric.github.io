@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="{{LANG_CODE}}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- תגיות מטה קריטיות ל-SEO - יוחלפו אוטומטית לפי המדינה -->
+    <title>{{PAGE_TITLE}}</title>
+    <meta name="description" content="{{META_DESCRIPTION}}">
+    <link rel="canonical" href="https://github.io{{COUNTRY_CODE}}/">
+    
+    <style>
+        :root { 
+            --primary: #1a237e; 
+            --secondary: #00e676; 
+            --dark: #212121; 
+            --light: #f5f5f5; 
+        }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: var(--light); 
+            color: var(--dark); 
+            margin: 0; 
+            padding: 20px; 
+        }
+        header { 
+            background: var(--primary); 
+            color: white; 
+            padding: 25px; 
+            text-align: center; 
+            border-radius: 8px; 
+            margin-bottom: 30px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        header h1 { margin: 0 0 10px 0; font-size: 2.2rem; }
+        header p { margin: 0; opacity: 0.9; font-size: 1.1rem; }
+        
+        .container { max-width: 1200px; margin: 0 auto; }
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            gap: 25px; 
+        }
+        
+        /* עיצוב כרטיסיית קזינו (Casino Card) מותאם לבונוסים ו-RTP לעתיד */
+        .casino-card { 
+            background: white; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.06); 
+            padding: 25px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            border-top: 5px solid var(--primary);
+            transition: transform 0.2s;
+        }
+        .casino-card:hover { transform: translateY(-3px); }
+        .card-header h2 { margin: 0 0 8px 0; font-size: 1.35rem; color: var(--primary); }
+        
+        .license-badge { 
+            background: #e3f2fd; 
+            color: #0d47a1;
+            font-size: 0.75rem; 
+            padding: 5px 10px; 
+            border-radius: 4px; 
+            display: inline-block; 
+            margin-bottom: 20px; 
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        /* מיקום עתידי לנתונים ובונוסים בשלב הבא (Scraping) */
+        .features-box { 
+            background: #f8f9fa; 
+            padding: 12px; 
+            border-radius: 6px; 
+            margin-bottom: 20px; 
+            font-size: 0.9rem; 
+            border-left: 3px solid #ced4da;
+        }
+        .feature-item { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 8px; 
+        }
+        .feature-item:last-child { margin-bottom: 0; }
+        .feature-item span { color: #6c757d; }
+        .feature-item strong { color: var(--dark); }
+        
+        .btn-play { 
+            background: var(--secondary); 
+            color: var(--dark); 
+            text-decoration: none; 
+            text-align: center; 
+            padding: 14px; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            transition: background 0.2s; 
+            display: block;
+            box-shadow: 0 2px 4px rgba(0,230,118,0.2);
+        }
+        .btn-play:hover { background: #00c853; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>SlotMetric</h1>
+        <p>Official Regulatory Directory for {{COUNTRY_NAME}}</p>
+    </header>
+
+    <main class="container">
+        <div class="grid">
+            {{CASINO_CARDS}}
+        </div>
+    </main>
+
+</body>
+</html>
