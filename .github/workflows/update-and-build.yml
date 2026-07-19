@@ -1,0 +1,55 @@
+name: SlotMetric Data Sync & Static Build
+
+on:
+  schedule:
+    - cron: '0 0 * * 0' # רץ אוטומטית בכל יום ראשון בחצות
+  workflow_dispatch: # מאפשר לנו להפעיל אותו ידנית בכל רגע בלחיצת כפתור
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  update-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Data Collectors
+        run: |
+          echo "📥 Fetching UKGC Data..."
+          python data-collectors/ukgc_fetcher.py
+          
+          # בשלב הבא כשנפעיל את גרמניה, נסיר מפה את הסימון #
+          # echo "📥 Fetching GGL Germany Data..."
+          # python data-collectors/ggl_fetcher.py
+
+      - name: Commit and Push Updated Data
+        run: |
+          git config --global user.name "SlotMetric Bot"
+          git config --global user.email "bot@slotmetric.com"
+          git add processed-data/*.json
+          git diff-index --quiet HEAD || git commit -m "🤖 SlotMetric Auto-Data-Update: $(date +'%Y-%m-%d')"
+          git push
+
+      - name: Build Static HTML Pages
+        run: |
+          echo "🏗️ Generating SEO Optimized HTML Structure..."
+          python build.py
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './public'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
