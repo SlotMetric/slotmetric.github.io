@@ -89,7 +89,7 @@
             justify-content: space-between; 
             border-top: 5px solid var(--primary);
             transition: transform 0.2s, box-shadow 0.2s;
-            height: 380px; /* גובה קבוע לכרטיסיות ליישור שורות אחיד פיקס */
+            height: 440px; /* הגדלנו מעט את הגובה ל-440px כדי לתת מקום ללוגו מבלי לצופף את השורות */
             box-sizing: border-box;
         }
         .casino-card:hover { 
@@ -97,7 +97,6 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.08);
         }
         
-        /* עיצוב פרימיום מודגש עבור שני הכרטיסים הממומנים בראש העמוד */
         .casino-card.featured {
             border-top: 5px solid #ff9100 !important; 
             background: linear-gradient(180deg, #ffffff 0%, #fffde7 100%) !important; 
@@ -108,7 +107,22 @@
             box-shadow: 0 10px 30px rgba(255, 145, 0, 0.25) !important;
         }
         
-        .card-header h2 { margin: 0; font-size: 1.4rem; color: var(--primary); }
+        /* עיצוב אזור הלוגו החדש - שומר על גובה קבוע אחיד לטובת ה-SEO של גוגל */
+        .logo-container {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 12px;
+        }
+        .casino-logo {
+            max-height: 45px;
+            max-width: 140px;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+
+        .card-header h2 { margin: 0; font-size: 1.3rem; color: var(--primary); }
         
         .license-badge { 
             background: #e8eaf6; 
@@ -117,7 +131,7 @@
             padding: 4px 8px; 
             border-radius: 4px; 
             display: inline-block; 
-            margin: 8px 0 15px 0;
+            margin: 6px 0 15px 0;
             font-weight: bold;
         }
         
@@ -146,7 +160,7 @@
             margin-bottom: 20px; 
             font-size: 0.9rem; 
             border-left: 4px solid #b0bec5;
-            flex-grow: 1; /* דוחף את הנתונים למלא את השטח הפנימי */
+            flex-grow: 1; 
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -160,7 +174,6 @@
         .feature-item span { color: #546e7a; font-weight: 500; }
         .feature-item strong { color: var(--dark); text-align: right; }
         
-        /* מחלקות עיצוב צבעוניות לסטטוס קריפטו */
         .crypto-no { color: var(--danger) !important; font-weight: bold; }
         .crypto-yes { color: var(--success) !important; font-weight: bold; }
         
@@ -181,7 +194,6 @@
 </head>
 <body>
 
-      <!-- תפריט הניווט המעודכן הכולל את ספרד -->
     <nav class="navbar">
         <a href="/" class="navbar-brand">SlotMetric</a>
         <div class="navbar-menu">
