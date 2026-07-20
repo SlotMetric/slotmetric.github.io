@@ -1,0 +1,50 @@
+[
+  {
+    "id": "es-dgoj-1002",
+    "brand_name": "Casino Gran Madrid",
+    "is_featured": true,
+    "user_clicks": 490,
+    "official_url": "https://casinogranmadridonline.es",
+    "affiliate_url": "",
+    "license_number": "DGOJ-1002-REG",
+    "features": {
+      "bonus_text": "Bono de bienvenida hasta 200€ + 50 Tiradas Gratis",
+      "average_rtp": "96.5%",
+      "min_deposit": "10€",
+      "payment_methods": "Bizum, PayPal, Visa, Mastercard, Teleingreso",
+      "crypto_supported": false
+    }
+  },
+  {
+    "id": "es-dgoj-1045",
+    "brand_name": "LeoVegas ES",
+    "is_featured": false,
+    "user_clicks": 380,
+    "official_url": "https://leovegas.es",
+    "affiliate_url": "",
+    "license_number": "DGOJ-1045-REG",
+    "features": {
+      "bonus_text": "Hasta 200€ en efectivo con tus primeros depósitos",
+      "average_rtp": "96.2%",
+      "min_deposit": "10€",
+      "payment_methods": "Bizum, Apple Pay, PayPal, Visa, Mastercard",
+      "crypto_supported": false
+    }
+  },
+  {
+    "id": "es-dgoj-1089",
+    "brand_name": "Codere Casino",
+    "is_featured": false,
+    "user_clicks": 290,
+    "official_url": "https://codere.es",
+    "affiliate_url": "",
+    "license_number": "DGOJ-1089-REG",
+    "features": {
+      "bonus_text": "100% de tu primer depósito hasta 200€",
+      "average_rtp": "96.4%",
+      "min_deposit": "10€",
+      "payment_methods": "Bizum, PayPal, Visa, Mastercard, Hal-Cash",
+      "crypto_supported": false
+    }
+  }
+]
