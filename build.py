@@ -21,7 +21,7 @@ COUNTRIES_CONFIG = {
         "country_name": "Netherlands (Nederland)",
         "data_file": "processed-data/netherlands-casinos.json",
         "page_title": "Legale Online Casino's in Nederland | SlotMetric",
-        "meta_description": "Bekijk de offiziële Ksa kansspelvergunninghouders. Betrouwbare online casino's, live RTP-data und bonussen op SlotMetric."
+        "meta_description": "Bekijk de officiële Ksa kansspelvergunninghouders. Betrouwbare online casino's, live RTP-data und bonussen op SlotMetric."
     },
     "se": {
         "country_name": "Sweden (Sverige)",
@@ -89,8 +89,8 @@ def build_casino_cards(json_path):
         logo_url = casino.get("logo_url", "")
         alt_text = casino.get("seo_meta", {}).get("alt_text", casino['brand_name'])
         
-        # רנדור תגית תמונה פתוחה וחסינת בעיות CDN
-        if logo_url and logo_url.startswith("http"):
+        # הזרקת קוד התמונה הקשיח ללא תלות באבטחת שרת חיצוני או חוסמי פרסומות
+        if logo_url and (logo_url.startswith("http") or logo_url.startswith("data:")):
             logo_html = f'<img src="{logo_url}" alt="{alt_text}" class="casino-logo" loading="lazy">'
         else:
             logo_html = f'<div style="font-weight:bold; color:#1a237e; font-size:1.2rem;">{casino["brand_name"]}</div>'
@@ -159,7 +159,7 @@ def main():
         with open(output_file_path, "w", encoding="utf-8") as f:
             f.write(page_content)
             
-    print("✅ Success: Static layout built successfully with SlotMetric Official Logos.")
+    print("✅ Success: Static layout built successfully with SlotMetric Embedded Logos.")
 
 if __name__ == "__main__":
     main()
