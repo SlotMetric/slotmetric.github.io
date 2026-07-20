@@ -1,0 +1,68 @@
+[
+  {
+    "id": "nl-ksa-1001",
+    "brand_name": "Toto Casino",
+    "is_featured": true,
+    "official_url": "https://toto.nl",
+    "affiliate_url": "",
+    "license_number": "Ksa-Vergunning-1001",
+    "last_updated": "2026-07-20",
+    "seo_meta": {
+      "card_title": "Toto Casino Netherlands License Verification",
+      "alt_text": "Toto casino official legal dutch logo verified by Ksa"
+    },
+    "features": {
+      "bonus_text": "100 Gratis Spins bij registratie",
+      "wagering_requirement": "1x",
+      "average_rtp": "96.2%",
+      "payout_speed": "Instant",
+      "min_deposit": "10€",
+      "payment_methods": "iDEAL, Visa, Mastercard",
+      "crypto_supported": false
+    }
+  },
+  {
+    "id": "nl-ksa-1002",
+    "brand_name": "Unibet NL",
+    "is_featured": false,
+    "official_url": "https://unibet.nl",
+    "affiliate_url": "",
+    "license_number": "Ksa-Vergunning-1002",
+    "last_updated": "2026-07-20",
+    "seo_meta": {
+      "card_title": "Unibet Netherlands Regulatory License Review",
+      "alt_text": "Unibet NL official legal casino slot logo"
+    },
+    "features": {
+      "bonus_text": "Ontvang €50 aan Free Spins",
+      "wagering_requirement": "1x",
+      "average_rtp": "96.7%",
+      "payout_speed": "1 Day",
+      "min_deposit": "10€",
+      "payment_methods": "iDEAL, Trustly, Visa, Mastercard",
+      "crypto_supported": false
+    }
+  },
+  {
+    "id": "nl-ksa-1003",
+    "brand_name": "BetCity",
+    "is_featured": false,
+    "official_url": "https://betcity.nl",
+    "affiliate_url": "",
+    "license_number": "Ksa-Vergunning-1003",
+    "last_updated": "2026-07-20",
+    "seo_meta": {
+      "card_title": "BetCity NL License Verification & Metrics",
+      "alt_text": "BetCity official legal dutch casino logo"
+    },
+    "features": {
+      "bonus_text": "Welkomstbonus tot €250 aan Free Spins",
+      "wagering_requirement": "1x",
+      "average_rtp": "96.4%",
+      "payout_speed": "Instant",
+      "min_deposit": "5€",
+      "payment_methods": "iDEAL, Visa, Mastercard",
+      "crypto_supported": false
+    }
+  }
+]
