@@ -3,19 +3,13 @@
     "id": "se-si-20015",
     "brand_name": "LeoVegas SE",
     "is_featured": true,
+    "user_clicks": 350,
     "official_url": "https://leovegas.se",
     "affiliate_url": "",
     "license_number": "SI-20015",
-    "last_updated": "2026-07-20",
-    "seo_meta": {
-      "card_title": "LeoVegas Sweden License Verification & RTP Metrics",
-      "alt_text": "LeoVegas Sweden official legal logo verified by Spelinspektionen"
-    },
     "features": {
       "bonus_text": "100 gratisspins utan omsättningskrav",
-      "wagering_requirement": "1x",
       "average_rtp": "96.4%",
-      "payout_speed": "Instant (Swish)",
       "min_deposit": "100 kr",
       "payment_methods": "Swish, Trustly, Visa, Mastercard",
       "crypto_supported": false
@@ -25,19 +19,13 @@
     "id": "se-si-20089",
     "brand_name": "Casumo SE",
     "is_featured": false,
+    "user_clicks": 280,
     "official_url": "https://casumo.com",
     "affiliate_url": "",
     "license_number": "SI-20089",
-    "last_updated": "2026-07-20",
-    "seo_meta": {
-      "card_title": "Casumo Sweden Regulatory License Review",
-      "alt_text": "Casumo Sweden official legal casino slot logo"
-    },
     "features": {
       "bonus_text": "100% upp till 2000 kr i välkomstbonus",
-      "wagering_requirement": "30x",
       "average_rtp": "96.6%",
-      "payout_speed": "Instant",
       "min_deposit": "100 kr",
       "payment_methods": "Trustly, Swish, Apple Pay, Visa",
       "crypto_supported": false
@@ -47,19 +35,13 @@
     "id": "se-si-20112",
     "brand_name": "Mr Green SE",
     "is_featured": false,
+    "user_clicks": 140,
     "official_url": "https://mrgreen.com",
     "affiliate_url": "",
     "license_number": "SI-20112",
-    "last_updated": "2026-07-20",
-    "seo_meta": {
-      "card_title": "Mr Green Sweden Legal License Details",
-      "alt_text": "Mr Green Sweden verified casino logo"
-    },
     "features": {
       "bonus_text": "100 kr i cashspins vid första insättningen",
-      "wagering_requirement": "1x",
       "average_rtp": "96.2%",
-      "payout_speed": "Instant (Trustly)",
       "min_deposit": "100 kr",
       "payment_methods": "Trustly, Swish, Neteller, Skrill",
       "crypto_supported": false
