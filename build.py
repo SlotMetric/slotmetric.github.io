@@ -1,47 +1,39 @@
 import os
 import json
-import shutil
 
 TEMPLATE_PATH = "templates/index.html"
 OUTPUT_DIR = "public"
-LOGOS_SRC = "assets/logos"
-LOGOS_DEST = "public/assets/logos"
 
 COUNTRIES_CONFIG = {
     "uk": {
         "country_name": "United Kingdom",
-        "lang_code": "en",
         "data_file": "processed-data/uk-casinos.json",
         "page_title": "Verified Licensed Casinos in the UK | SlotMetric",
         "meta_description": "Check the official list of UKGC licensed online casinos. Real-time data verification, licensing numbers, and features on SlotMetric."
     },
     "de": {
         "country_name": "Germany (Deutschland)",
-        "lang_code": "de",
         "data_file": "processed-data/germany-casinos.json",
         "page_title": "Erlaubte Online Casinos in Deutschland | SlotMetric",
         "meta_description": "Offizielle Whitelist der GGL für Online Casinos in Deutschland. Überprüfte Lizenzen, RTP-Werte und Bonus-Metriken auf SlotMetric."
     },
     "nl": {
         "country_name": "Netherlands (Nederland)",
-        "lang_code": "nl",
         "data_file": "processed-data/netherlands-casinos.json",
         "page_title": "Legale Online Casino's in Nederland | SlotMetric",
         "meta_description": "Bekijk de officiële Ksa kansspelvergunninghouders. Betrouwbare online casino's, live RTP-data und bonussen op SlotMetric."
     },
     "se": {
         "country_name": "Sweden (Sverige)",
-        "lang_code": "sv",
         "data_file": "processed-data/sweden-casinos.json",
         "page_title": "Licensierade Online Casinon i Sverige | SlotMetric",
         "meta_description": "Officiell lista över casinon med svensk licens från Spelinspektionen. Verifierade spellicenser, RTP-data och bonusar auf SlotMetric."
     },
     "es": {
         "country_name": "Spain (España)",
-        "lang_code": "es",
         "data_file": "processed-data/spain-casinos.json",
         "page_title": "Casinos Online Autorizados en España | SlotMetric",
-        "meta_description": "Lista oficial de casinos con licencia de la DGOJ en España. Verificación en tiempo real, datos de RTP, métodos de pago y bonos en SlotMetric."
+        "meta_description": "Lista oficial de casinos con licencia de la DGOJ in España. Verificación en tiempo real, datos de RTP, métodos de pago y bonos en SlotMetric."
     }
 }
 
@@ -94,13 +86,10 @@ def build_casino_cards(json_path):
         
         crypto_html = '<strong class="crypto-yes">✅ Yes</strong>' if crypto_supported else '<strong class="crypto-no">❌ No (Fiat)</strong>'
         
-        logo_url = casino.get("logo_url", "")
-        alt_text = casino.get("seo_meta", {}).get("alt_text", casino['brand_name'])
-        
-        if logo_url:
-            logo_html = f'<img src="{logo_url}" alt="{alt_text}" class="casino-logo" loading="lazy">'
-        else:
-            logo_html = f'<div style="font-weight:bold; color:#1a237e; font-size:1.1rem; border-left:3px solid #1a237e; padding-left:8px;">{casino["brand_name"]}</div>'
+        # לוגיקה חכמה: שולף קוד אייקון מה-JSON, אם ריק - שם אייקון של קוביות כברירת מחדל
+        icon_code = casino.get("logo_url", "fa-dice")
+        if not icon_code.startswith("fa-"):
+            icon_code = "fa-dice" # הגנה מפני כתובות URL ישנות
             
         target_url = casino.get("affiliate_url") or casino.get("official_url") or "#"
         
@@ -112,7 +101,8 @@ def build_casino_cards(json_path):
         <div class="{card_class}">
             <div>
                 <div class="logo-container">
-                    {logo_html}
+                    <i class="fa-solid {icon_code} casino-icon-style"></i>
+                    <div class="casino-title-style">{casino['brand_name']}</div>
                 </div>
                 <div class="card-header">
                     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
@@ -122,7 +112,7 @@ def build_casino_cards(json_path):
                 </div>
                 <div class="features-box">
                     <div class="feature-item"><span>Welcome Bonus:</span> <strong>{bonus}</strong></div>
-                    <div class="feature-item"><span>Average RTP:</span> <strong>{rtp}</strong></div>
+                    <div class="features-item"><span>Average RTP:</span> <strong>{rtp}</strong></div>
                     <div class="feature-item"><span>Min Deposit:</span> <strong>{min_dep}</strong></div>
                     <div class="feature-item"><span>Payments:</span> <strong style="font-size: 0.8rem; max-width: 60%; color: #455a64;">{payments}</strong></div>
                     <div class="feature-item"><span>Crypto Support:</span> {crypto_html}</div>
@@ -140,13 +130,6 @@ def main():
     
     if not os.path.exists(OUTPUT_DIR):
         os.makedirs(OUTPUT_DIR)
-        
-    # העתקה אוטומטית של תיקיית הלוגואים הפיזית לתוך תיקיית הפרסום הסטטית public/
-    if os.path.exists(LOGOS_SRC):
-        if os.path.exists(LOGOS_DEST):
-            shutil.rmtree(LOGOS_DEST)
-        shutil.copytree(LOGOS_SRC, LOGOS_DEST)
-        print("📁 Assets Success: Copied visual brand logos folder to deploy target.")
         
     template = load_template()
     
@@ -173,7 +156,7 @@ def main():
         with open(output_file_path, "w", encoding="utf-8") as f:
             f.write(page_content)
             
-    print("✅ Success: Static layout built successfully with SlotMetric Visual Logo Integration.")
+    print("✅ Success: Static layout built successfully with SlotMetric Vector Icon Integration.")
 
 if __name__ == "__main__":
     main()
