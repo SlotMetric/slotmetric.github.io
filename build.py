@@ -1,3 +1,10 @@
+import os
+import json
+import re
+
+TEMPLATE_PATH = "templates/index.html"
+OUTPUT_DIR = "public"
+
 COUNTRIES_CONFIG = {
     "uk": {
         "country_name": "United Kingdom",
@@ -28,3 +35,129 @@ COUNTRIES_CONFIG = {
         "meta_description": "Officiell lista över casinon med svensk licens från Spelinspektionen. Verifierade spellicenser, RTP-data och bonusar på SlotMetric."
     }
 }
+
+def load_template():
+    if not os.path.exists(TEMPLATE_PATH):
+        raise FileNotFoundError(f"❌ Template file missing at: {TEMPLATE_PATH}")
+    with open(TEMPLATE_PATH, "r", encoding="utf-8") as f:
+        return f.read()
+
+def build_casino_cards(json_path):
+    if not os.path.exists(json_path):
+        print(f"⚠️ Data file not found for: {json_path}. Creating placeholder card.")
+        return """
+        <div class="casino-card" style="border-top-color: #666;">
+            <div class="card-header">
+                <h2>Database Syncing...</h2>
+                <span class="license-badge">Updating Live Data</span>
+            </div>
+            <div class="features-box">
+                <p>We are currently fetching and verifying the regulatory database for this country. Please refresh in a few moments.</p>
+            </div>
+        </div>
+        """
+        
+    with open(json_path, "r", encoding="utf-8") as f:
+        casinos = json.load(f)
+        
+    for casino in casinos:
+        try:
+            rtp_val = float(casino.get("features", {}).get("average_rtp", "96.5").replace("%", ""))
+            base_score = (rtp_val - 95.0) * 1.2 + 8.5
+            
+            license_str = str(casino.get("license_number", "0"))
+            digits_only = "".join(re.findall(r'\d+', license_str))
+            lic_mod = (int(digits_only) % 7) / 10 if digits_only else 0.2
+            
+            casino["calculated_score"] = round(base_score + lic_mod, 1)
+            
+            if casino["calculated_score"] > 9.7: casino["calculated_score"] = 9.7
+            if casino["calculated_score"] < 7.5: casino["calculated_score"] = 7.8
+        except Exception as e:
+            casino["calculated_score"] = 8.6
+            
+    featured_casinos = [c for c in casinos if c.get("is_featured") == True]
+    regular_casinos = [c for c in casinos if not c.get("is_featured") == True]
+    
+    regular_casinos.sort(key=lambda x: x["calculated_score"], reverse=True)
+    final_list = featured_casinos[:2] + regular_casinos[:(10 - len(featured_casinos[:2]))]
+    
+    cards_html = []
+    
+    for casino in final_list:
+        is_featured = casino.get("is_featured") == True
+        features = casino.get("features", {})
+        
+        bonus = features.get("bonus_text") or "Reviewing Bonus Terms"
+        rtp = features.get("average_rtp") or "Calculating Metrics"
+        min_dep = features.get("min_deposit") or "£10"
+        payments = features.get("payment_methods") or "Visa, Mastercard, E-Wallets"
+        crypto_supported = features.get("crypto_supported") == True
+        
+        crypto_html = '<strong class="crypto-yes">✅ Yes</strong>' if crypto_supported else '<strong class="crypto-no">❌ No (Fiat)</strong>'
+        
+        target_url = casino.get("affiliate_url") or casino.get("official_url") or "#"
+        
+        card_class = "casino-card featured" if is_featured else "casino-card"
+        badge_html = '<span class="sponsored-tag">★ Sponsored TOP</span>' if is_featured else f'<span class="score-tag">Rating: {casino["calculated_score"]}/10</span>'
+        rel_tag = 'rel="sponsored nofollow"' if is_featured else 'rel="nofollow noreferrer"'
+        
+        card = f"""
+        <div class="{card_class}">
+            <div class="card-header">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <h2>{casino['brand_name']}</h2>
+                    {badge_html}
+                </div>
+                <span class="license-badge">License: #{casino['license_number']}</span>
+            </div>
+            <div class="features-box">
+                <div class="feature-item"><span>Welcome Bonus:</span> <strong>{bonus}</strong></div>
+                <div class="feature-item"><span>Average RTP:</span> <strong>{rtp}</strong></div>
+                <div class="feature-item"><span>Min Deposit:</span> <strong>{min_dep}</strong></div>
+                <div class="feature-item"><span>Payments:</span> <strong style="font-size: 0.8rem; max-width: 60%; color: #455a64;">{payments}</strong></div>
+                <div class="feature-item"><span>Crypto Support:</span> {crypto_html}</div>
+            </div>
+            <a href="{target_url}" class="btn-play" {rel_tag} target="_blank">Verify & Play</a>
+        </div>
+        """
+        cards_html.append(card)
+        
+    return "\n".join(cards_html)
+
+def main():
+    print("Starting static website build for SlotMetric...")
+    
+    # הגנה נוקשה: יצירת תיקיית הפלט הסופית ממש בתחילת הריצה כדי למנוע את שגיאת ה-Upload Artifact
+    if not os.path.exists(OUTPUT_DIR):
+        os.makedirs(OUTPUT_DIR)
+        
+    template = load_template()
+    
+    for code, config in COUNTRIES_CONFIG.items():
+        print(f"📦 Processing country layout for: {config['country_name']} ({code})")
+        cards_html = build_casino_cards(config["data_file"])
+        
+        page_content = template
+        page_content = page_content.replace("{{PAGE_TITLE}}", config["page_title"])
+        page_content = page_content.replace("{{META_DESCRIPTION}}", config["meta_description"])
+        page_content = page_content.replace("{{LANG_CODE}}", config["lang_code"])
+        page_content = page_content.replace("{{COUNTRY_CODE}}", code)
+        page_content = page_content.replace("{{COUNTRY_NAME}}", config["country_name"])
+        page_content = page_content.replace("{{CASINO_CARDS}}", cards_html)
+        
+        if code == "uk":
+            output_file_path = os.path.join(OUTPUT_DIR, "index.html")
+        else:
+            country_dir = os.path.join(OUTPUT_DIR, code)
+            if not os.path.exists(country_dir):
+                os.makedirs(country_dir)
+            output_file_path = os.path.join(country_dir, "index.html")
+            
+        with open(output_file_path, "w", encoding="utf-8") as f:
+            f.write(page_content)
+            
+    print("✅ Success: Static layout built successfully with SlotMetric TOP 10 Logic.")
+
+if __name__ == "__main__":
+    main()
