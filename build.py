@@ -21,7 +21,7 @@ COUNTRIES_CONFIG = {
         "country_name": "Netherlands (Nederland)",
         "data_file": "processed-data/netherlands-casinos.json",
         "page_title": "Legale Online Casino's in Nederland | SlotMetric",
-        "meta_description": "Bekijk de officiële Ksa kansspelvergunninghouders. Betrouwbare online casino's, live RTP-data und bonussen op SlotMetric."
+        "meta_description": "Bekijk de offiziële Ksa kansspelvergunninghouders. Betrouwbare online casino's, live RTP-data und bonussen op SlotMetric."
     },
     "se": {
         "country_name": "Sweden (Sverige)",
@@ -89,10 +89,9 @@ def build_casino_cards(json_path):
         logo_url = casino.get("logo_url", "")
         alt_text = casino.get("seo_meta", {}).get("alt_text", casino['brand_name'])
         
-        # רנדור תגית תמונה רשמית ואמיתית ללא חסימות
+        # רנדור תגית תמונה פתוחה וחסינת בעיות CDN
         if logo_url and logo_url.startswith("http"):
-            logo_html = f'<img src="{logo_url}" alt="{alt_text}" class="casino-logo" loading="lazy" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'block\';">'
-            logo_html += f'<div style="display:none; font-weight:bold; color:#1a237e; font-size:1.2rem;">{casino["brand_name"]}</div>'
+            logo_html = f'<img src="{logo_url}" alt="{alt_text}" class="casino-logo" loading="lazy">'
         else:
             logo_html = f'<div style="font-weight:bold; color:#1a237e; font-size:1.2rem;">{casino["brand_name"]}</div>'
             
