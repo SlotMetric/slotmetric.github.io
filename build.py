@@ -41,27 +41,24 @@ def build_casino_cards(json_path):
         
     with open(json_path, "r", encoding="utf-8") as f:
         casinos = json.load(f)
-    
+        
     # אלגוריתם הדירוג האובייקטיבי המשופר של SlotMetric
     for casino in casinos:
         try:
             rtp_val = float(casino.get("features", {}).get("average_rtp", "96.5").replace("%", ""))
             
             # נוסחה מכוילת: לוקחת את ה-RTP ומנרמלת אותו לציון ריאליסטי ואמין בין 7.8 ל-9.7
-            # מונעת מצב של ציוני 10.00 פיקטיביים באתר
             base_score = (rtp_val - 95.0) * 1.5 + 8.5
             
             # הוספת תנודתיות קלה מבוססת מספר רישיון כדי שהציונים לא יהיו זהים לחלוטין
-            lic_mod = (int(casino.get("license_number", "0").split()[0]) % 5) / 10 if casino.get("license_number", "0").split()[0].isdigit() else 0.2
+            lic_mod = (int(casino.get("license_number", "0").split()[0]) % 5) / 10 if casino.get("license_number", "0").split() and casino.get("license_number", "0").split()[0].isdigit() else 0.2
             
             casino["calculated_score"] = round(base_score + lic_mod, 1)
             
-            # הגבלת גבולות גיזרה נוקשים לאלגוריתם
             if casino["calculated_score"] > 9.8: casino["calculated_score"] = 9.8
             if casino["calculated_score"] < 7.0: casino["calculated_score"] = 7.5
         except Exception as e:
-            print(f"Algorithm warning: {e}")
-            casino["calculated_score"] = 8.6 # ציון ברירת מחדל אובייקטיבי
+            casino["calculated_score"] = 8.6
             
     featured_casinos = [c for c in casinos if c.get("is_featured") == True]
     regular_casinos = [c for c in casinos if not c.get("is_featured") == True]
@@ -78,14 +75,13 @@ def build_casino_cards(json_path):
         bonus = features.get("bonus_text") or "Reviewing Bonus Terms"
         rtp = features.get("average_rtp") or "Calculating Metrics"
         min_dep = features.get("min_deposit") or "£10"
-        est_year = features.get("established_year") or "N/A"
         
         # משיכת נתוני התשלום החדשים
         payments = features.get("payment_methods") or "Visa, Mastercard, E-Wallets"
         crypto_supported = features.get("crypto_supported") == True
         
-        # הוספת תיוג טקסטואלי חכם לקריפטו לטובת המרה ו-SEO
-        crypto_text = "✅ Yes (Bitcoin & Altcoins)" if crypto_supported else "❌ No (Fiat Only)"
+        # הגדרת עיצוב דינמי וצבעוני לקריפטו (אדום/ירוק) לטובת חווית משתמש ו-SEO
+        crypto_html = '<strong class="crypto-yes">✅ Yes</strong>' if crypto_supported else '<strong class="crypto-no">❌ No (Fiat)</strong>'
         
         target_url = casino.get("affiliate_url") or casino.get("official_url") or "#"
         
@@ -93,22 +89,21 @@ def build_casino_cards(json_path):
         badge_html = '<span class="sponsored-tag">★ Sponsored TOP</span>' if is_featured else f'<span class="score-tag">Rating: {casino["calculated_score"]}/10</span>'
         rel_tag = 'rel="sponsored nofollow"' if is_featured else 'rel="nofollow noreferrer"'
         
-        # מבנה כרטיסייה הכולל את שורות התשלום והקריפטו החדשות
         card = f"""
         <div class="{card_class}">
             <div class="card-header">
-                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 5px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <h2>{casino['brand_name']}</h2>
                     {badge_html}
                 </div>
-                <span class="license-badge">Verified License: #{casino['license_number']}</span>
+                <span class="license-badge">License: #{casino['license_number']}</span>
             </div>
             <div class="features-box">
                 <div class="feature-item"><span>Welcome Bonus:</span> <strong>{bonus}</strong></div>
                 <div class="feature-item"><span>Average RTP:</span> <strong>{rtp}</strong></div>
                 <div class="feature-item"><span>Min Deposit:</span> <strong>{min_dep}</strong></div>
-                <div class="feature-item"><span>Payments:</span> <strong style="font-size: 0.85rem; max-width: 60%; text-align: right;">{payments}</strong></div>
-                <div class="feature-item"><span>Crypto Support:</span> <strong>{crypto_text}</strong></div>
+                <div class="feature-item"><span>Payments:</span> <strong style="font-size: 0.8rem; max-width: 60%; color: #455a64;">{payments}</strong></div>
+                <div class="feature-item"><span>Crypto Support:</span> {crypto_html}</div>
             </div>
             <a href="{target_url}" class="btn-play" {rel_tag} target="_blank">Verify & Play</a>
         </div>
