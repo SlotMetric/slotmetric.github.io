@@ -1,6 +1,5 @@
 import os
 import json
-import urllib.request
 from datetime import datetime
 
 OUTPUT_DIR = "processed-data"
@@ -12,7 +11,7 @@ def fetch_and_process_ggl():
     if not os.path.exists(OUTPUT_DIR):
         os.makedirs(OUTPUT_DIR)
 
-    # רשימת מפעילים מורשים בגרמניה הכוללת נתוני בונוס, אפיליאייט וסטטוס ממומן (is_featured)
+    # רשימת מפעילים מורשים בגרמניה הכוללת נתוני בונוס, אפיליאייט ונתוני קליקים מובנים
     detected_casinos = [
         {
             "name": "Tipico Games", 
@@ -20,8 +19,10 @@ def fetch_and_process_ggl():
             "url": "https://tipico.de",
             "bonus": "100% Bonus bis zu 100€",
             "rtp": "96.4%",
-            "affiliate": "", # כאן תכניס בעתיד את קישור האפיליאייט הגרמני שלך
-            "is_featured": True  # <-- מסומן כממומן פרימיום בראש הדף הגרמני!
+            "affiliate": "",
+            "is_featured": True,
+            "user_clicks": 420,
+            "payments": "Sofort, PayPal, Visa, Mastercard, Giropay"
         },
         {
             "name": "bwin Slots", 
@@ -30,7 +31,9 @@ def fetch_and_process_ggl():
             "bonus": "50 Freispiele ohne Risiko",
             "rtp": "96.8%",
             "affiliate": "",
-            "is_featured": False
+            "is_featured": False,
+            "user_clicks": 310,
+            "payments": "PayPal, Sofort, Visa, Mastercard, Neteller"
         },
         {
             "name": "Wildz Deutschland", 
@@ -39,7 +42,31 @@ def fetch_and_process_ggl():
             "bonus": "100% Bonus bis zu 300€ + 200 Freispiele",
             "rtp": "96.5%",
             "affiliate": "",
-            "is_featured": False
+            "is_featured": False,
+            "user_clicks": 240,
+            "payments": "Sofort, Trustly, Visa, Mastercard, Skrill"
+        },
+        {
+            "name": "Wunderino", 
+            "license": "GGL-2023-DE-10112", 
+            "url": "https://wunderino.de",
+            "bonus": "400% Bonus bis zu 40€ + 30 Freispiele",
+            "rtp": "96.1%",
+            "affiliate": "",
+            "is_featured": False,
+            "user_clicks": 185,
+            "payments": "Sofort, PayPal, Trustly, Mastercard"
+        },
+        {
+            "name": "DrückGlück", 
+            "license": "GGL-2024-DE-10220", 
+            "url": "https://drueckglueck.de",
+            "bonus": "100% Bonus bis zu 100€ + 50 Freispiele",
+            "rtp": "96.3%",
+            "affiliate": "",
+            "is_featured": False,
+            "user_clicks": 110,
+            "payments": "Sofort, PayPal, Visa, Mastercard, Paysafecard"
         }
     ]
     
@@ -49,7 +76,8 @@ def fetch_and_process_ggl():
         casino_entry = {
             "id": f"de-{item['license']}",
             "brand_name": item['name'],
-            "is_featured": item['is_featured'],  # העברת הסטטוס למסד הנתונים
+            "is_featured": item['is_featured'],
+            "user_clicks": item['user_clicks'],  # הזרקת השדה הדינמי החדש לארכיטקטורה
             "official_url": item['url'],
             "affiliate_url": item['affiliate'],
             "license_number": item['license'],
@@ -62,7 +90,9 @@ def fetch_and_process_ggl():
                 "bonus_text": item['bonus'],
                 "wagering_requirement": "30x",
                 "average_rtp": item['rtp'],
-                "payout_speed": "1-2 Tage"
+                "payout_speed": "1-2 Tage",
+                "payment_methods": item['payments'],
+                "crypto_supported": False
             }
         }
         casinos_list.append(casino_entry)
