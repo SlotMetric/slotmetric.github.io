@@ -8,6 +8,9 @@
     <meta name="description" content="{{META_DESCRIPTION}}">
     <link rel="canonical" href="https://github.io{{COUNTRY_CODE}}/">
     
+    <!-- חיבור ספריית האייקונים הבינלאומית הרשמית של FontAwesome -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+    
     <style>
         :root { 
             --primary: #1a237e; 
@@ -89,7 +92,7 @@
             justify-content: space-between; 
             border-top: 5px solid var(--primary);
             transition: transform 0.2s, box-shadow 0.2s;
-            height: 440px; /* הגדלנו מעט את הגובה ל-440px כדי לתת מקום ללוגו מבלי לצופף את השורות */
+            height: 440px; 
             box-sizing: border-box;
         }
         .casino-card:hover { 
@@ -107,19 +110,27 @@
             box-shadow: 0 10px 30px rgba(255, 145, 0, 0.25) !important;
         }
         
-        /* עיצוב אזור הלוגו החדש - שומר על גובה קבוע אחיד לטובת ה-SEO של גוגל */
+        /* עיצוב מכולת האייקון/לוגו המודרנית החדשה */
         .logo-container {
             height: 50px;
             display: flex;
             align-items: center;
             justify-content: flex-start;
             margin-bottom: 12px;
+            gap: 12px;
         }
-        .casino-logo {
-            max-height: 45px;
-            max-width: 140px;
-            object-fit: contain;
-            border-radius: 4px;
+        .casino-icon-style {
+            font-size: 2.2rem;
+            color: var(--primary);
+        }
+        .casino-card.featured .casino-icon-style {
+            color: #ff9100; /* האייקון הופך לזהב בכרטיסייה הממומנת */
+        }
+        .casino-title-style {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 0;
         }
 
         .card-header h2 { margin: 0; font-size: 1.3rem; color: var(--primary); }
