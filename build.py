@@ -85,12 +85,14 @@ def build_casino_cards(json_path):
         crypto_supported = features.get("crypto_supported") == True
         
         crypto_html = '<strong class="crypto-yes">✅ Yes</strong>' if crypto_supported else '<strong class="crypto-no">❌ No (Fiat)</strong>'
-        
-        # לוגיקה חכמה: שולף קוד אייקון מה-JSON, אם ריק - שם אייקון של קוביות כברירת מחדל
+         
+        # חילוץ קוד האייקון הוקטורי מתוך ה-JSON
         icon_code = casino.get("logo_url", "fa-dice")
-        if not icon_code.startswith("fa-"):
-            icon_code = "fa-dice" # הגנה מפני כתובות URL ישנות
-            
+        if not str(icon_code).startswith("fa-"):
+            icon_code = "fa-dice" # הגנה ורשת ביטחון
+    
+        logo_html = f'<i class="fa-solid {icon_code} casino-icon-style"></i>'
+    
         target_url = casino.get("affiliate_url") or casino.get("official_url") or "#"
         
         card_class = "casino-card featured" if is_featured else "casino-card"
