@@ -4,14 +4,19 @@
     "brand_name": "Duelz Casino",
     "is_featured": true,
     "user_clicks": 620,
-    "logo_url": "fa-crown",
     "official_url": "https://duelz.com",
     "affiliate_url": "https://casino.org",
     "license_number": "48695",
+    "last_updated": "2026-07-20",
+    "seo_meta": {
+      "card_title": "Duelz Casino UK Review",
+      "alt_text": "Verified logo"
+    },
     "features": {
       "bonus_text": "100% Bonus up to £100 + 100 Free Spins",
+      "wagering_requirement": "30x",
       "average_rtp": "96.5%",
-      "min_deposit": "£10",
+      "payout_speed": "1-2 Days",
       "payment_methods": "Visa, Mastercard, PayPal, Trustly",
       "crypto_supported": false
     }
@@ -21,14 +26,19 @@
     "brand_name": "Bet365 Casino",
     "is_featured": false,
     "user_clicks": 540,
-    "logo_url": "fa-gem",
     "official_url": "https://bet365.com",
     "affiliate_url": "",
     "license_number": "39521",
+    "last_updated": "2026-07-20",
+    "seo_meta": {
+      "card_title": "Bet365 Casino UK Review",
+      "alt_text": "Verified logo"
+    },
     "features": {
       "bonus_text": "Stake £10, Get 50 Free Spins",
+      "wagering_requirement": "30x",
       "average_rtp": "97.2%",
-      "min_deposit": "£10",
+      "payout_speed": "1-2 Days",
       "payment_methods": "Visa, Mastercard, Apple Pay, PayPal",
       "crypto_supported": false
     }
@@ -38,14 +48,19 @@
     "brand_name": "All British Casino",
     "is_featured": false,
     "user_clicks": 490,
-    "logo_url": "https://allbritishcasino.com",
     "official_url": "https://allbritishcasino.com",
     "affiliate_url": "",
     "license_number": "38790",
+    "last_updated": "2026-07-20",
+    "seo_meta": {
+      "card_title": "All British Casino UK Review",
+      "alt_text": "Verified logo"
+    },
     "features": {
       "bonus_text": "100% Welcome Bonus up to £100",
+      "wagering_requirement": "30x",
       "average_rtp": "97.1%",
-      "min_deposit": "£10",
+      "payout_speed": "1-2 Days",
       "payment_methods": "Visa, Mastercard, Trustly, Neteller",
       "crypto_supported": false
     }
@@ -55,14 +70,19 @@
     "brand_name": "PlayOJO",
     "is_featured": false,
     "user_clicks": 410,
-    "logo_url": "fa-gamepad",
     "official_url": "https://playojo.com",
     "affiliate_url": "",
     "license_number": "39326",
+    "last_updated": "2026-07-20",
+    "seo_meta": {
+      "card_title": "PlayOJO UK Review",
+      "alt_text": "Verified logo"
+    },
     "features": {
       "bonus_text": "Get 50 Free Spins - No Wagering",
+      "wagering_requirement": "30x",
       "average_rtp": "96.9%",
-      "min_deposit": "£10",
+      "payout_speed": "1-2 Days",
       "payment_methods": "Visa, Mastercard, PayPal, MuchBetter",
       "crypto_supported": false
     }
@@ -72,14 +92,19 @@
     "brand_name": "Rizk Casino",
     "is_featured": false,
     "user_clicks": 380,
-    "logo_url": "fa-bolt",
     "official_url": "https://rizk.com",
     "affiliate_url": "",
     "license_number": "56438",
+    "last_updated": "2026-07-20",
+    "seo_meta": {
+      "card_title": "Rizk Casino UK Review",
+      "alt_text": "Verified logo"
+    },
     "features": {
       "bonus_text": "100% Bonus up to £50 + 50 Spins",
+      "wagering_requirement": "30x",
       "average_rtp": "96.8%",
-      "min_deposit": "£10",
+      "payout_speed": "1-2 Days",
       "payment_methods": "Visa, Mastercard, Trustly, Skrill",
       "crypto_supported": false
     }
@@ -89,14 +114,19 @@
     "brand_name": "Casimba Casino",
     "is_featured": false,
     "user_clicks": 310,
-    "logo_url": "fa-shield-halved",
     "official_url": "https://casimba.com",
     "affiliate_url": "",
     "license_number": "52894",
+    "last_updated": "2026-07-20",
+    "seo_meta": {
+      "card_title": "Casimba Casino UK Review",
+      "alt_text": "Verified logo"
+    },
     "features": {
       "bonus_text": "100% Match up to £200 + 50 Spins",
+      "wagering_requirement": "30x",
       "average_rtp": "96.7%",
-      "min_deposit": "£10",
+      "payout_speed": "1-2 Days",
       "payment_methods": "Visa, Mastercard, Skrill, Neteller",
       "crypto_supported": false
     }
@@ -106,14 +136,19 @@
     "brand_name": "888casino",
     "is_featured": false,
     "user_clicks": 290,
-    "logo_url": "fa-clover",
     "official_url": "https://888casino.com",
     "affiliate_url": "",
     "license_number": "39028",
+    "last_updated": "2026-07-20",
+    "seo_meta": {
+      "card_title": "888casino UK Review",
+      "alt_text": "Verified logo"
+    },
     "features": {
       "bonus_text": "100% Up To £100 + 88 Free Spins",
+      "wagering_requirement": "30x",
       "average_rtp": "96.6%",
-      "min_deposit": "£10",
+      "payout_speed": "1-2 Days",
       "payment_methods": "Visa, Mastercard, PayPal, Neteller, Skrill",
       "crypto_supported": false
     }
@@ -123,14 +158,19 @@
     "brand_name": "Mr Green UK",
     "is_featured": false,
     "user_clicks": 210,
-    "logo_url": "fa-user-tie",
     "official_url": "https://mrgreen.com",
     "affiliate_url": "",
     "license_number": "39260",
+    "last_updated": "2026-07-20",
+    "seo_meta": {
+      "card_title": "Mr Green UK UK Review",
+      "alt_text": "Verified logo"
+    },
     "features": {
       "bonus_text": "100 Free Spins on Lucky Mr Green",
+      "wagering_requirement": "30x",
       "average_rtp": "96.4%",
-      "min_deposit": "£10",
+      "payout_speed": "1-2 Days",
       "payment_methods": "Visa, Mastercard, Revolut, Trustly",
       "crypto_supported": false
     }
@@ -140,14 +180,19 @@
     "brand_name": "Grosvenor Casino",
     "is_featured": false,
     "user_clicks": 180,
-    "logo_url": "fa-building-columns",
     "official_url": "https://grosvenorcasinos.com",
     "affiliate_url": "",
     "license_number": "38750",
+    "last_updated": "2026-07-20",
+    "seo_meta": {
+      "card_title": "Grosvenor Casino UK Review",
+      "alt_text": "Verified logo"
+    },
     "features": {
       "bonus_text": "Deposit £20, Play With £50",
+      "wagering_requirement": "30x",
       "average_rtp": "96.2%",
-      "min_deposit": "£10",
+      "payout_speed": "1-2 Days",
       "payment_methods": "Visa, Mastercard, PayPal, Paysafecard",
       "crypto_supported": false
     }
@@ -157,14 +202,19 @@
     "brand_name": "LeoVegas UK",
     "is_featured": false,
     "user_clicks": 120,
-    "logo_url": "fa-cat",
     "official_url": "https://leovegas.co.uk",
     "affiliate_url": "",
     "license_number": "39198",
+    "last_updated": "2026-07-20",
+    "seo_meta": {
+      "card_title": "LeoVegas UK UK Review",
+      "alt_text": "Verified logo"
+    },
     "features": {
       "bonus_text": "Up to £100 + 50 Free Spins",
+      "wagering_requirement": "30x",
       "average_rtp": "96.0%",
-      "min_deposit": "£10",
+      "payout_speed": "1-2 Days",
       "payment_methods": "Visa, Mastercard, PayPal, Apple Pay",
       "crypto_supported": false
     }
