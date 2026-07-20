@@ -33,7 +33,7 @@ COUNTRIES_CONFIG = {
         "country_name": "Spain (España)",
         "data_file": "processed-data/spain-casinos.json",
         "page_title": "Casinos Online Autorizados en España | SlotMetric",
-        "meta_description": "Lista oficial de casinos con licencia de la DGOJ in España. Verificación en tiempo real, datos de RTP, métodos de pago y bonos en SlotMetric."
+        "meta_description": "Lista oficial de casinos con licencia de la DGOJ en España. Verificación en tiempo real, datos de RTP, métodos de pago y bonos en SlotMetric."
     }
 }
 
@@ -85,14 +85,17 @@ def build_casino_cards(json_path):
         crypto_supported = features.get("crypto_supported") == True
         
         crypto_html = '<strong class="crypto-yes">✅ Yes</strong>' if crypto_supported else '<strong class="crypto-no">❌ No (Fiat)</strong>'
-         
-        # חילוץ קוד האייקון הוקטורי מתוך ה-JSON
-        icon_code = casino.get("logo_url", "fa-dice")
-        if not str(icon_code).startswith("fa-"):
-            icon_code = "fa-dice" # הגנה ורשת ביטחון
-    
-        logo_html = f'<i class="fa-solid {icon_code} casino-icon-style"></i>'
-    
+        
+        logo_url = casino.get("logo_url", "")
+        alt_text = casino.get("seo_meta", {}).get("alt_text", casino['brand_name'])
+        
+        # רנדור תגית תמונה רשמית ואמיתית ללא חסימות
+        if logo_url and logo_url.startswith("http"):
+            logo_html = f'<img src="{logo_url}" alt="{alt_text}" class="casino-logo" loading="lazy" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'block\';">'
+            logo_html += f'<div style="display:none; font-weight:bold; color:#1a237e; font-size:1.2rem;">{casino["brand_name"]}</div>'
+        else:
+            logo_html = f'<div style="font-weight:bold; color:#1a237e; font-size:1.2rem;">{casino["brand_name"]}</div>'
+            
         target_url = casino.get("affiliate_url") or casino.get("official_url") or "#"
         
         card_class = "casino-card featured" if is_featured else "casino-card"
@@ -103,8 +106,7 @@ def build_casino_cards(json_path):
         <div class="{card_class}">
             <div>
                 <div class="logo-container">
-                    <i class="fa-solid {icon_code} casino-icon-style"></i>
-                    <div class="casino-title-style">{casino['brand_name']}</div>
+                    {logo_html}
                 </div>
                 <div class="card-header">
                     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
@@ -114,7 +116,7 @@ def build_casino_cards(json_path):
                 </div>
                 <div class="features-box">
                     <div class="feature-item"><span>Welcome Bonus:</span> <strong>{bonus}</strong></div>
-                    <div class="features-item"><span>Average RTP:</span> <strong>{rtp}</strong></div>
+                    <div class="feature-item"><span>Average RTP:</span> <strong>{rtp}</strong></div>
                     <div class="feature-item"><span>Min Deposit:</span> <strong>{min_dep}</strong></div>
                     <div class="feature-item"><span>Payments:</span> <strong style="font-size: 0.8rem; max-width: 60%; color: #455a64;">{payments}</strong></div>
                     <div class="feature-item"><span>Crypto Support:</span> {crypto_html}</div>
@@ -158,7 +160,7 @@ def main():
         with open(output_file_path, "w", encoding="utf-8") as f:
             f.write(page_content)
             
-    print("✅ Success: Static layout built successfully with SlotMetric Vector Icon Integration.")
+    print("✅ Success: Static layout built successfully with SlotMetric Official Logos.")
 
 if __name__ == "__main__":
     main()
