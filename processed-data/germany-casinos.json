@@ -1,80 +1,110 @@
 [
   {
-    "id": "de-ggl-10023",
+    "id": "de-GGL-2024-DE-10023",
     "brand_name": "Tipico Games",
     "is_featured": true,
     "user_clicks": 420,
     "official_url": "https://tipico.de",
     "affiliate_url": "",
     "license_number": "GGL-2024-DE-10023",
+    "last_updated": "2026-07-20",
+    "seo_meta": {
+      "card_title": "Tipico Games Germany License & RTP Metrics",
+      "alt_text": "Tipico Games official legal german casino logo"
+    },
     "features": {
       "bonus_text": "100% Bonus bis zu 100€",
+      "wagering_requirement": "30x",
       "average_rtp": "96.4%",
-      "min_deposit": "10€",
+      "payout_speed": "1-2 Tage",
       "payment_methods": "Sofort, PayPal, Visa, Mastercard, Giropay",
       "crypto_supported": false
     }
   },
   {
-    "id": "de-ggl-10045",
+    "id": "de-GGL-2023-DE-10045",
     "brand_name": "bwin Slots",
     "is_featured": false,
     "user_clicks": 310,
     "official_url": "https://bwin.de",
     "affiliate_url": "",
     "license_number": "GGL-2023-DE-10045",
+    "last_updated": "2026-07-20",
+    "seo_meta": {
+      "card_title": "bwin Slots Germany License & RTP Metrics",
+      "alt_text": "bwin Slots official legal german casino logo"
+    },
     "features": {
       "bonus_text": "50 Freispiele ohne Risiko",
+      "wagering_requirement": "30x",
       "average_rtp": "96.8%",
-      "min_deposit": "10€",
+      "payout_speed": "1-2 Tage",
       "payment_methods": "PayPal, Sofort, Visa, Mastercard, Neteller",
       "crypto_supported": false
     }
   },
   {
-    "id": "de-ggl-10089",
+    "id": "de-GGL-2024-GER-10089",
     "brand_name": "Wildz Deutschland",
     "is_featured": false,
     "user_clicks": 240,
     "official_url": "https://wildz.de",
     "affiliate_url": "",
     "license_number": "GGL-2024-GER-10089",
+    "last_updated": "2026-07-20",
+    "seo_meta": {
+      "card_title": "Wildz Deutschland Germany License & RTP Metrics",
+      "alt_text": "Wildz Deutschland official legal german casino logo"
+    },
     "features": {
       "bonus_text": "100% Bonus bis zu 300€ + 200 Freispiele",
+      "wagering_requirement": "30x",
       "average_rtp": "96.5%",
-      "min_deposit": "10€",
+      "payout_speed": "1-2 Tage",
       "payment_methods": "Sofort, Trustly, Visa, Mastercard, Skrill",
       "crypto_supported": false
     }
   },
   {
-    "id": "de-ggl-10112",
+    "id": "de-GGL-2023-DE-10112",
     "brand_name": "Wunderino",
     "is_featured": false,
     "user_clicks": 185,
     "official_url": "https://wunderino.de",
     "affiliate_url": "",
     "license_number": "GGL-2023-DE-10112",
+    "last_updated": "2026-07-20",
+    "seo_meta": {
+      "card_title": "Wunderino Germany License & RTP Metrics",
+      "alt_text": "Wunderino official legal german casino logo"
+    },
     "features": {
       "bonus_text": "400% Bonus bis zu 40€ + 30 Freispiele",
+      "wagering_requirement": "30x",
       "average_rtp": "96.1%",
-      "min_deposit": "10€",
+      "payout_speed": "1-2 Tage",
       "payment_methods": "Sofort, PayPal, Trustly, Mastercard",
       "crypto_supported": false
     }
   },
   {
-    "id": "de-ggl-10220",
+    "id": "de-GGL-2024-DE-10220",
     "brand_name": "DrückGlück",
     "is_featured": false,
     "user_clicks": 110,
     "official_url": "https://drueckglueck.de",
     "affiliate_url": "",
     "license_number": "GGL-2024-DE-10220",
+    "last_updated": "2026-07-20",
+    "seo_meta": {
+      "card_title": "DrückGlück Germany License & RTP Metrics",
+      "alt_text": "DrückGlück official legal german casino logo"
+    },
     "features": {
       "bonus_text": "100% Bonus bis zu 100€ + 50 Freispiele",
+      "wagering_requirement": "30x",
       "average_rtp": "96.3%",
-      "min_deposit": "10€",
+      "payout_speed": "1-2 Tage",
       "payment_methods": "Sofort, PayPal, Visa, Mastercard, Paysafecard",
       "crypto_supported": false
     }
