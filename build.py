@@ -4,7 +4,6 @@ import json
 TEMPLATE_PATH = "templates/index.html"
 OUTPUT_DIR = "public"
 
-# הגדרות מנוע ה-SEO והלוגיקה המודולרית של SlotMetric לכל מדינה
 COUNTRIES_CONFIG = {
     "uk": {
         "country_name": "United Kingdom",
@@ -38,65 +37,51 @@ def load_template():
 def build_casino_cards(json_path):
     if not os.path.exists(json_path):
         print(f"⚠️ Data file not found for: {json_path}. Creating placeholder card.")
-        return """
-        <div class="casino-card" style="border-top-color: #666;">
-            <div class="card-header">
-                <h2>Database Syncing...</h2>
-                <span class="license-badge">Updating Live Data</span>
-            </div>
-            <div class="features-box">
-                <p>We are currently fetching and verifying the regulatory database for this country. Please refresh in a few moments.</p>
-            </div>
-        </div>
-        """
+        return "<!-- No data available -->"
         
     with open(json_path, "r", encoding="utf-8") as f:
         casinos = json.load(f)
         
-    # =========================================================================
-    # 🧠 אלגוריתם הדירוג והסינון של SLOTMETRIC (TOP 10 ENGINE)
-    # =========================================================================
-    # בעתיד, כאשר ה-Scraper יאסוף את הנתונים, הנוסחה תתבסס על 4 הפרמטרים הבאים:
-    # 1. אחוז ה-RTP (משקל: 30%) - החזר גבוה לשחקן מעלה את הציון.
-    # 2. גובה הבונוס ותנאי הגלגול / Wagering (משקל: 30%) - תנאים קלים מעניקים בונוס לציון.
-    # 3. מהירות המשיכה / Payout Speed (משקל: 20%) - תשלום מהיר (Instant/1 Day) מקפיץ קדימה.
-    # 4. המרה מסחרית (משקל: 20%) - עמלות שותפים אופטימליות לאתר.
-    # =========================================================================
-    
     for casino in casinos:
         try:
-            # לוגיקת המרה בסיסית לשלב א' (RTP בלבד כבסיס זמני למיונים): לקוח "96.5%" והופך למספר 96.5
             rtp_val = float(casino.get("features", {}).get("average_rtp", "96").replace("%", ""))
-            casino["calculated_score"] = round((rtp_val - 90) * 10, 1) # מייצר ציון בטווח של 6.0 עד 10.0
+            casino["calculated_score"] = round((rtp_val - 90) * 10, 1)
             if casino["calculated_score"] > 10.0: casino["calculated_score"] = 10.0
             if casino["calculated_score"] < 1.0: casino["calculated_score"] = 5.0
         except:
-            casino["calculated_score"] = 8.5 # ציון ברירת מחדל אובייקטיבי אם חסר נתון
+            casino["calculated_score"] = 8.5
             
-    # הפרדה אסטרטגית בין בתי קזינו ממומנים/שותפי פרימיום לבין שאר הרשימה האובייקטיבית
     featured_casinos = [c for c in casinos if c.get("is_featured") == True]
     regular_casinos = [c for c in casinos if not c.get("is_featured") == True]
     
-    # הפעלת המיון של האלגוריתם על הרשימה הרגילה (מהציון הגבוה ביותר לנמוך ביותר)
     regular_casinos.sort(key=lambda x: x["calculated_score"], reverse=True)
-    
-    # בניית העשירייה הפותחת (TOP 10): 
-    # לוקח מקסימום 2 ממומנים לראש הדף, ומשלים בדיוק את החסר מתוך הרגילים הכי טובים בעלי הציון הגבוה ביותר.
     final_list = featured_casinos[:2] + regular_casinos[:(10 - len(featured_casinos[:2]))]
     
     cards_html = []
     
     for casino in final_list:
         is_featured = casino.get("is_featured") == True
-        bonus = casino.get("features", {}).get("bonus_text") or "Reviewing Bonus Terms"
-        rtp = casino.get("features", {}).get("average_rtp") or "Calculating Metrics"
+        features = casino.get("features", {})
+        
+        bonus = features.get("bonus_text") or "Reviewing Bonus Terms"
+        rtp = features.get("average_rtp") or "Calculating Metrics"
+        min_dep = features.get("min_deposit") or "£10"
+        est_year = features.get("established_year") or "N/A"
+        
+        # משיכת נתוני התשלום החדשים
+        payments = features.get("payment_methods") or "Visa, Mastercard, E-Wallets"
+        crypto_supported = features.get("crypto_supported") == True
+        
+        # הוספת תיוג טקסטואלי חכם לקריפטו לטובת המרה ו-SEO
+        crypto_text = "✅ Yes (Bitcoin & Altcoins)" if crypto_supported else "❌ No (Fiat Only)"
+        
         target_url = casino.get("affiliate_url") or casino.get("official_url") or "#"
         
-        # התאמת מחלקות עיצוב ותגיות SEO בהתאם לסטטוס הכרטיסייה (ממומן או אובייקטיבי)
         card_class = "casino-card featured" if is_featured else "casino-card"
         badge_html = '<span class="sponsored-tag">★ Sponsored TOP</span>' if is_featured else f'<span class="score-tag">Rating: {casino["calculated_score"]}/10</span>'
         rel_tag = 'rel="sponsored nofollow"' if is_featured else 'rel="nofollow noreferrer"'
         
+        # מבנה כרטיסייה הכולל את שורות התשלום והקריפטו החדשות
         card = f"""
         <div class="{card_class}">
             <div class="card-header">
@@ -109,6 +94,9 @@ def build_casino_cards(json_path):
             <div class="features-box">
                 <div class="feature-item"><span>Welcome Bonus:</span> <strong>{bonus}</strong></div>
                 <div class="feature-item"><span>Average RTP:</span> <strong>{rtp}</strong></div>
+                <div class="feature-item"><span>Min Deposit:</span> <strong>{min_dep}</strong></div>
+                <div class="feature-item"><span>Payments:</span> <strong style="font-size: 0.85rem; max-width: 60%; text-align: right;">{payments}</strong></div>
+                <div class="feature-item"><span>Crypto Support:</span> <strong>{crypto_text}</strong></div>
             </div>
             <a href="{target_url}" class="btn-play" {rel_tag} target="_blank">Verify & Play</a>
         </div>
@@ -136,11 +124,9 @@ def main():
         page_content = page_content.replace("{{COUNTRY_NAME}}", config["country_name"])
         page_content = page_content.replace("{{CASINO_CARDS}}", cards_html)
         
-        # עמוד בריטניה נבנה ישירות כדף הבית הראשי בשורש השרת
         if code == "uk":
             output_file_path = os.path.join(OUTPUT_DIR, "index.html")
         else:
-            # שאר המדינות נשמרות בתתי-תיקיות (public/de/index.html)
             country_dir = os.path.join(OUTPUT_DIR, code)
             if not os.path.exists(country_dir):
                 os.makedirs(country_dir)
