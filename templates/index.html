@@ -15,6 +15,9 @@
             --dark: #212121; 
             --light: #f8f9fa; 
             --white: #ffffff;
+            --gray: #607d8b;
+            --danger: #d32f2f;
+            --success: #388e3c;
         }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
@@ -24,7 +27,6 @@
             padding: 0; 
         }
         
-        /* תפריט ניווט עליון חדש לשיפור ה-SEO והמעבר בין מדינות */
         .navbar {
             background: var(--primary);
             padding: 15px 20px;
@@ -55,7 +57,7 @@
             border-radius: 4px;
             transition: 0.2s;
         }
-        .nav-link:hover, .nav-link.active {
+        .nav-link:hover {
             color: var(--white);
             background: rgba(255,255,255,0.1);
         }
@@ -87,66 +89,38 @@
             justify-content: space-between; 
             border-top: 5px solid var(--primary);
             transition: transform 0.2s, box-shadow 0.2s;
+            height: 380px; /* גובה קבוע לכרטיסיות ליישור שורות אחיד פיקס */
+            box-sizing: border-box;
         }
         .casino-card:hover { 
             transform: translateY(-5px); 
             box-shadow: 0 8px 25px rgba(0,0,0,0.08);
         }
-        .card-header h2 { margin: 0 0 6px 0; font-size: 1.4rem; color: var(--primary); }
+        
+        /* עיצוב פרימיום מודגש עבור שני הכרטיסים הממומנים בראש העמוד */
+        .casino-card.featured {
+            border-top: 5px solid #ff9100 !important; 
+            background: linear-gradient(180deg, #ffffff 0%, #fffde7 100%) !important; 
+            box-shadow: 0 6px 20px rgba(255, 145, 0, 0.15) !important; 
+        }
+        .casino-card.featured:hover {
+            transform: scale(1.02) translateY(-5px) !important;
+            box-shadow: 0 10px 30px rgba(255, 145, 0, 0.25) !important;
+        }
+        
+        .card-header h2 { margin: 0; font-size: 1.4rem; color: var(--primary); }
         
         .license-badge { 
             background: #e8eaf6; 
             color: #1a237e;
-            font-size: 0.75rem; 
-            padding: 5px 10px; 
+            font-size: 0.72rem; 
+            padding: 4px 8px; 
             border-radius: 4px; 
             display: inline-block; 
-            margin-bottom: 20px; 
+            margin: 8px 0 15px 0;
             font-weight: bold;
         }
         
-        .features-box { 
-            background: #f8f9fa; 
-            padding: 15px; 
-            border-radius: 8px; 
-            margin-bottom: 20px; 
-            font-size: 0.92rem; 
-            border-left: 4px solid #b0bec5;
-        }
-        .feature-item { 
-            display: flex; 
-            justify-content: space-between; 
-            margin-bottom: 10px; 
-        }
-        .feature-item:last-child { margin-bottom: 0; }
-        .feature-item span { color: #546e7a; }
-        .feature-item strong { color: var(--dark); }
-        
-        .btn-play { 
-            background: var(--secondary); 
-            color: var(--dark); 
-            text-decoration: none; 
-            text-align: center; 
-            padding: 14px; 
-            border-radius: 8px; 
-            font-weight: bold; 
-            transition: background 0.2s; 
-            display: block;
-            box-shadow: 0 4px 6px rgba(0,230,118,0.15);
-        }
-        .btn-play:hover { background: #00c853; }
-
-                /* עיצוב פרימיום מודגש עבור שני הכרטיסים הממומנים בראש העמוד */
-        .casino-card.featured {
-            border-top: 5px solid #ff9100 !important; /* זהב יוקרתי */
-            background: linear-gradient(180deg, #ffffff 0%, #fffde7 100%) !important; /* רקע שמנת עדין */
-            box-shadow: 0 6px 20px rgba(255, 145, 0, 0.15) !important; /* הילה זוהרת */
-            transform: scale(1.02); /* בולט יותר מהשאר */
-        }
-        .casino-card.featured:hover {
-            transform: scale(1.04) translateY(-3px) !important;
-            box-shadow: 0 10px 30px rgba(255, 145, 0, 0.25) !important;
-        }
         .sponsored-tag {
             background: #ff9100;
             color: white;
@@ -164,17 +138,55 @@
             padding: 4px 8px;
             border-radius: 4px;
         }
-
+        
+        .features-box { 
+            background: #f8f9fa; 
+            padding: 12px 15px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+            font-size: 0.9rem; 
+            border-left: 4px solid #b0bec5;
+            flex-grow: 1; /* דוחף את הנתונים למלא את השטח הפנימי */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 8px;
+        }
+        .feature-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+        }
+        .feature-item span { color: #546e7a; font-weight: 500; }
+        .feature-item strong { color: var(--dark); text-align: right; }
+        
+        /* מחלקות עיצוב צבעוניות לסטטוס קריפטו */
+        .crypto-no { color: var(--danger) !important; font-weight: bold; }
+        .crypto-yes { color: var(--success) !important; font-weight: bold; }
+        
+        .btn-play { 
+            background: var(--secondary); 
+            color: var(--dark); 
+            text-decoration: none; 
+            text-align: center; 
+            padding: 12px; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            transition: background 0.2s; 
+            display: block;
+            box-shadow: 0 4px 6px rgba(0,230,118,0.15);
+        }
+        .btn-play:hover { background: #00c853; }
     </style>
 </head>
 <body>
 
-     <!-- תפריט הניווט המעודכן -->
     <nav class="navbar">
         <a href="/" class="navbar-brand">SlotMetric</a>
         <div class="navbar-menu">
             <a href="/" class="nav-link">🇬🇧 UK Market</a>
             <a href="/de/" class="nav-link">🇩🇪 Germany</a>
+            <a href="/nl/" class="nav-link">🇳🇱 Netherlands</a>
         </div>
     </nav>
 
