@@ -1,5 +1,6 @@
 import os
 import json
+import re
 
 TEMPLATE_PATH = "templates/index.html"
 OUTPUT_DIR = "public"
@@ -42,27 +43,35 @@ def build_casino_cards(json_path):
     with open(json_path, "r", encoding="utf-8") as f:
         casinos = json.load(f)
         
-    # אלגוריתם הדירוג האובייקטיבי המשופר של SlotMetric
+    # =========================================================================
+    # 🧠 אלגוריתם הדירוג המשופר והסופי של SLOTMETRIC (חסין תקלות רישוי)
+    # =========================================================================
     for casino in casinos:
         try:
             rtp_val = float(casino.get("features", {}).get("average_rtp", "96.5").replace("%", ""))
             
-            # נוסחה מכוילת: לוקחת את ה-RTP ומנרמלת אותו לציון ריאליסטי ואמין בין 7.8 ל-9.7
-            base_score = (rtp_val - 95.0) * 1.5 + 8.5
+            # בסיס הציון נגזר מאחוז ה-RTP
+            base_score = (rtp_val - 95.0) * 1.2 + 8.5
             
-            # הוספת תנודתיות קלה מבוססת מספר רישיון כדי שהציונים לא יהיו זהים לחלוטין
-            lic_mod = (int(casino.get("license_number", "0").split()[0]) % 5) / 10 if casino.get("license_number", "0").split() and casino.get("license_number", "0").split()[0].isdigit() else 0.2
+            # חילוץ חכם של מספרים בלבד מתוך מחרוזת הרישיון (תומך ב-Ksa, GGL ו-UKGC)
+            license_str = str(casino.get("license_number", "0"))
+            digits_only = "".join(re.findall(r'\d+', license_str))
+            
+            # ייצור מספר שינוי דינמי על בסיס הרישיון כדי למנוע ציונים זהים
+            lic_mod = (int(digits_only) % 7) / 10 if digits_only else 0.2
             
             casino["calculated_score"] = round(base_score + lic_mod, 1)
             
-            if casino["calculated_score"] > 9.8: casino["calculated_score"] = 9.8
-            if casino["calculated_score"] < 7.0: casino["calculated_score"] = 7.5
+            # ויסות הציון שלא יחרוג מהנורמה האמינה
+            if casino["calculated_score"] > 9.7: casino["calculated_score"] = 9.7
+            if casino["calculated_score"] < 7.5: casino["calculated_score"] = 7.8
         except Exception as e:
-            casino["calculated_score"] = 8.6
+            casino["calculated_score"] = 8.7
             
     featured_casinos = [c for c in casinos if c.get("is_featured") == True]
     regular_casinos = [c for c in casinos if not c.get("is_featured") == True]
     
+    # מיון מהגבוה לנמוך
     regular_casinos.sort(key=lambda x: x["calculated_score"], reverse=True)
     final_list = featured_casinos[:2] + regular_casinos[:(10 - len(featured_casinos[:2]))]
     
@@ -75,12 +84,9 @@ def build_casino_cards(json_path):
         bonus = features.get("bonus_text") or "Reviewing Bonus Terms"
         rtp = features.get("average_rtp") or "Calculating Metrics"
         min_dep = features.get("min_deposit") or "£10"
-        
-        # משיכת נתוני התשלום החדשים
         payments = features.get("payment_methods") or "Visa, Mastercard, E-Wallets"
         crypto_supported = features.get("crypto_supported") == True
         
-        # הגדרת עיצוב דינמי וצבעוני לקריפטו (אדום/ירוק) לטובת חווית משתמש ו-SEO
         crypto_html = '<strong class="crypto-yes">✅ Yes</strong>' if crypto_supported else '<strong class="crypto-no">❌ No (Fiat)</strong>'
         
         target_url = casino.get("affiliate_url") or casino.get("official_url") or "#"
