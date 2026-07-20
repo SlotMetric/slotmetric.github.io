@@ -1,6 +1,5 @@
 import os
 import json
-import re
 
 TEMPLATE_PATH = "templates/index.html"
 OUTPUT_DIR = "public"
@@ -8,28 +7,24 @@ OUTPUT_DIR = "public"
 COUNTRIES_CONFIG = {
     "uk": {
         "country_name": "United Kingdom",
-        "lang_code": "en",
         "data_file": "processed-data/uk-casinos.json",
         "page_title": "Verified Licensed Casinos in the UK | SlotMetric",
         "meta_description": "Check the official list of UKGC licensed online casinos. Real-time data verification, licensing numbers, and features on SlotMetric."
     },
     "de": {
         "country_name": "Germany (Deutschland)",
-        "lang_code": "de",
         "data_file": "processed-data/germany-casinos.json",
         "page_title": "Erlaubte Online Casinos in Deutschland | SlotMetric",
         "meta_description": "Offizielle Whitelist der GGL für Online Casinos in Deutschland. Überprüfte Lizenzen, RTP-Werte und Bonus-Metriken auf SlotMetric."
     },
     "nl": {
         "country_name": "Netherlands (Nederland)",
-        "lang_code": "nl",
         "data_file": "processed-data/netherlands-casinos.json",
         "page_title": "Legale Online Casino's in Nederland | SlotMetric",
         "meta_description": "Bekijk de officiële Ksa kansspelvergunninghouders. Betrouwbare online casino's, live RTP-data und bonussen op SlotMetric."
     },
     "se": {
         "country_name": "Sweden (Sverige)",
-        "lang_code": "sv",
         "data_file": "processed-data/sweden-casinos.json",
         "page_title": "Licensierade Online Casinon i Sverige | SlotMetric",
         "meta_description": "Officiell lista över casinon med svensk licens från Spelinspektionen. Verifierade spellicenser, RTP-data och bonusar på SlotMetric."
@@ -44,41 +39,41 @@ def load_template():
 
 def build_casino_cards(json_path):
     if not os.path.exists(json_path):
-        print(f"⚠️ Data file not found for: {json_path}. Creating placeholder card.")
-        return """
-        <div class="casino-card" style="border-top-color: #666;">
-            <div class="card-header">
-                <h2>Database Syncing...</h2>
-                <span class="license-badge">Updating Live Data</span>
-            </div>
-            <div class="features-box">
-                <p>We are currently fetching and verifying the regulatory database for this country. Please refresh in a few moments.</p>
-            </div>
-        </div>
-        """
+        print(f"⚠️ Data file not found for: {json_path}.")
+        return "<!-- No data available -->"
         
     with open(json_path, "r", encoding="utf-8") as f:
         casinos = json.load(f)
         
+    # =========================================================================
+    # 🧠 אלגוריתם הדירוג של SLOTMETRIC מבוסס חכמת ההמונים (USER ENGAGEMENT)
+    # =========================================================================
+    # האלגוריתם מנרמל את כמות הקליקים השבועית של המשתמשים לציון ריאליסטי מתוך 10.
+    # כרגע הנתונים מוזנים ידנית ב-JSON ובעתיד יתעדכנו אוטומטית מ-Google Analytics API.
+    # =========================================================================
+    
+    # מציאת מספר הקליקים המקסימלי בקובץ כדי למנוע חריגה מהרשת
+    all_clicks = [int(c.get("user_clicks", 10)) for c in casinos]
+    max_clicks = max(all_clicks) if all_clicks else 100
+    if max_clicks == 0: max_clicks = 100
+
     for casino in casinos:
         try:
-            rtp_val = float(casino.get("features", {}).get("average_rtp", "96.5").replace("%", ""))
-            base_score = (rtp_val - 95.0) * 1.2 + 8.5
+            clicks = int(casino.get("user_clicks", 50))
             
-            license_str = str(casino.get("license_number", "0"))
-            digits_only = "".join(re.findall(r'\d+', license_str))
-            lic_mod = (int(digits_only) % 7) / 10 if digits_only else 0.2
+            # נוסחת נרמול: קזינו עם הכי הרבה קליקים מקבל בסיס של 9.5, והשאר נגזרים ממנו באופן יחסי
+            calculated_rating = 7.5 + ((clicks / max_clicks) * 2.1)
+            casino["calculated_score"] = round(calculated_rating, 1)
             
-            casino["calculated_score"] = round(base_score + lic_mod, 1)
-            
-            if casino["calculated_score"] > 9.7: casino["calculated_score"] = 9.7
-            if casino["calculated_score"] < 7.5: casino["calculated_score"] = 7.8
-        except Exception as e:
-            casino["calculated_score"] = 8.6
+            if casino["calculated_score"] > 9.8: casino["calculated_score"] = 9.8
+            if casino["calculated_score"] < 7.0: casino["calculated_score"] = 7.5
+        except Exception:
+            casino["calculated_score"] = 8.5
             
     featured_casinos = [c for c in casinos if c.get("is_featured") == True]
     regular_casinos = [c for c in casinos if not c.get("is_featured") == True]
     
+    # מיון אוטומטי של הרשימה מהגבוה לנמוך על בסיס כמות הקליקים האמיתית של הגולשים
     regular_casinos.sort(key=lambda x: x["calculated_score"], reverse=True)
     final_list = featured_casinos[:2] + regular_casinos[:(10 - len(featured_casinos[:2]))]
     
@@ -128,7 +123,6 @@ def build_casino_cards(json_path):
 def main():
     print("Starting static website build for SlotMetric...")
     
-    # הגנה נוקשה: יצירת תיקיית הפלט הסופית ממש בתחילת הריצה כדי למנוע את שגיאת ה-Upload Artifact
     if not os.path.exists(OUTPUT_DIR):
         os.makedirs(OUTPUT_DIR)
         
@@ -139,9 +133,9 @@ def main():
         cards_html = build_casino_cards(config["data_file"])
         
         page_content = template
-        page_content = page_content.replace("{{PAGE_TITLE}}", config["page_title"])
-        page_content = page_content.replace("{{META_DESCRIPTION}}", config["meta_description"])
-        page_content = page_content.replace("{{LANG_CODE}}", config["lang_code"])
+        page_content = page_content.replace("{{PAGE_TITLE}}", config.get("page_title", "SlotMetric Database"))
+        page_content = page_content.replace("{{META_DESCRIPTION}}", config.get("meta_description", ""))
+        page_content = page_content.replace("{{LANG_CODE}}", "en")
         page_content = page_content.replace("{{COUNTRY_CODE}}", code)
         page_content = page_content.replace("{{COUNTRY_NAME}}", config["country_name"])
         page_content = page_content.replace("{{CASINO_CARDS}}", cards_html)
@@ -157,7 +151,7 @@ def main():
         with open(output_file_path, "w", encoding="utf-8") as f:
             f.write(page_content)
             
-    print("✅ Success: Static layout built successfully with SlotMetric TOP 10 Logic.")
+    print("✅ Success: Static layout built successfully with SlotMetric User Engagement Engine.")
 
 if __name__ == "__main__":
     main()
