@@ -7,41 +7,35 @@ OUTPUT_DIR = "public"
 COUNTRIES_CONFIG = {
     "uk": {
         "country_name": "United Kingdom",
-        "lang_code": "en",
         "data_file": "processed-data/uk-casinos.json",
         "page_title": "Verified Licensed Casinos in the UK | SlotMetric",
         "meta_description": "Check the official list of UKGC licensed online casinos. Real-time data verification, licensing numbers, and features on SlotMetric."
     },
     "de": {
         "country_name": "Germany (Deutschland)",
-        "lang_code": "de",
         "data_file": "processed-data/germany-casinos.json",
         "page_title": "Erlaubte Online Casinos in Deutschland | SlotMetric",
         "meta_description": "Offizielle Whitelist der GGL für Online Casinos in Deutschland. Überprüfte Lizenzen, RTP-Werte und Bonus-Metriken auf SlotMetric."
     },
     "nl": {
         "country_name": "Netherlands (Nederland)",
-        "lang_code": "nl",
         "data_file": "processed-data/netherlands-casinos.json",
         "page_title": "Legale Online Casino's in Nederland | SlotMetric",
         "meta_description": "Bekijk de officiële Ksa kansspelvergunninghouders. Betrouwbare online casino's, live RTP-data und bonussen op SlotMetric."
     },
     "se": {
         "country_name": "Sweden (Sverige)",
-        "lang_code": "sv",
         "data_file": "processed-data/sweden-casinos.json",
         "page_title": "Licensierade Online Casinon i Sverige | SlotMetric",
         "meta_description": "Officiell lista över casinon med svensk licens från Spelinspektionen. Verifierade spellicenser, RTP-data och bonusar på SlotMetric."
     },
     "es": {
         "country_name": "Spain (España)",
-        "lang_code": "es",
         "data_file": "processed-data/spain-casinos.json",
         "page_title": "Casinos Online Autorizados en España | SlotMetric",
         "meta_description": "Lista oficial de casinos con licencia de la DGOJ en España. Verificación en tiempo real, datos de RTP, métodos de pago y bonos en SlotMetric."
     }
 }
-
 
 def load_template():
     if not os.path.exists(TEMPLATE_PATH):
@@ -57,14 +51,6 @@ def build_casino_cards(json_path):
     with open(json_path, "r", encoding="utf-8") as f:
         casinos = json.load(f)
         
-    # =========================================================================
-    # 🧠 אלגוריתם הדירוג של SLOTMETRIC מבוסס חכמת ההמונים (USER ENGAGEMENT)
-    # =========================================================================
-    # האלגוריתם מנרמל את כמות הקליקים השבועית של המשתמשים לציון ריאליסטי מתוך 10.
-    # כרגע הנתונים מוזנים ידנית ב-JSON ובעתיד יתעדכנו אוטומטית מ-Google Analytics API.
-    # =========================================================================
-    
-    # מציאת מספר הקליקים המקסימלי בקובץ כדי למנוע חריגה מהרשת
     all_clicks = [int(c.get("user_clicks", 10)) for c in casinos]
     max_clicks = max(all_clicks) if all_clicks else 100
     if max_clicks == 0: max_clicks = 100
@@ -72,8 +58,6 @@ def build_casino_cards(json_path):
     for casino in casinos:
         try:
             clicks = int(casino.get("user_clicks", 50))
-            
-            # נוסחת נרמול: קזינו עם הכי הרבה קליקים מקבל בסיס של 9.5, והשאר נגזרים ממנו באופן יחסי
             calculated_rating = 7.5 + ((clicks / max_clicks) * 2.1)
             casino["calculated_score"] = round(calculated_rating, 1)
             
@@ -85,7 +69,6 @@ def build_casino_cards(json_path):
     featured_casinos = [c for c in casinos if c.get("is_featured") == True]
     regular_casinos = [c for c in casinos if not c.get("is_featured") == True]
     
-    # מיון אוטומטי של הרשימה מהגבוה לנמוך על בסיס כמות הקליקים האמיתית של הגולשים
     regular_casinos.sort(key=lambda x: x["calculated_score"], reverse=True)
     final_list = featured_casinos[:2] + regular_casinos[:(10 - len(featured_casinos[:2]))]
     
@@ -103,6 +86,15 @@ def build_casino_cards(json_path):
         
         crypto_html = '<strong class="crypto-yes">✅ Yes</strong>' if crypto_supported else '<strong class="crypto-no">❌ No (Fiat)</strong>'
         
+        # לוגיקת הזרקת לוגו: בודק אם קיים קישור תמונה ב-JSON, אם לא - מציג בלוק טקסט נקי
+        logo_url = casino.get("logo_url", "")
+        alt_text = casino.get("seo_meta", {}).get("alt_text", casino['brand_name'])
+        
+        if logo_url:
+            logo_html = f'<img src="{logo_url}" alt="{alt_text}" class="casino-logo" loading="lazy">'
+        else:
+            logo_html = f'<div style="font-weight:bold; color:#1a237e; font-size:1.1rem; border-left:3px solid #1a237e; padding-left:8px;">{casino["brand_name"]}</div>'
+            
         target_url = casino.get("affiliate_url") or casino.get("official_url") or "#"
         
         card_class = "casino-card featured" if is_featured else "casino-card"
@@ -111,19 +103,24 @@ def build_casino_cards(json_path):
         
         card = f"""
         <div class="{card_class}">
-            <div class="card-header">
-                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                    <h2>{casino['brand_name']}</h2>
-                    {badge_html}
+            <div>
+                <!-- אזור הלוגו הוויזואלי החדש -->
+                <div class="logo-container">
+                    {logo_html}
                 </div>
-                <span class="license-badge">License: #{casino['license_number']}</span>
-            </div>
-            <div class="features-box">
-                <div class="feature-item"><span>Welcome Bonus:</span> <strong>{bonus}</strong></div>
-                <div class="feature-item"><span>Average RTP:</span> <strong>{rtp}</strong></div>
-                <div class="feature-item"><span>Min Deposit:</span> <strong>{min_dep}</strong></div>
-                <div class="feature-item"><span>Payments:</span> <strong style="font-size: 0.8rem; max-width: 60%; color: #455a64;">{payments}</strong></div>
-                <div class="feature-item"><span>Crypto Support:</span> {crypto_html}</div>
+                <div class="card-header">
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <span class="license-badge">License: #{casino['license_number']}</span>
+                        {badge_html}
+                    </div>
+                </div>
+                <div class="features-box">
+                    <div class="feature-item"><span>Welcome Bonus:</span> <strong>{bonus}</strong></div>
+                    <div class="feature-item"><span>Average RTP:</span> <strong>{rtp}</strong></div>
+                    <div class="feature-item"><span>Min Deposit:</span> <strong>{min_dep}</strong></div>
+                    <div class="feature-item"><span>Payments:</span> <strong style="font-size: 0.8rem; max-width: 60%; color: #455a64;">{payments}</strong></div>
+                    <div class="feature-item"><span>Crypto Support:</span> {crypto_html}</div>
+                </div>
             </div>
             <a href="{target_url}" class="btn-play" {rel_tag} target="_blank">Verify & Play</a>
         </div>
@@ -163,7 +160,7 @@ def main():
         with open(output_file_path, "w", encoding="utf-8") as f:
             f.write(page_content)
             
-    print("✅ Success: Static layout built successfully with SlotMetric User Engagement Engine.")
+    print("✅ Success: Static layout built successfully with SlotMetric Visual Logo Integration.")
 
 if __name__ == "__main__":
     main()
