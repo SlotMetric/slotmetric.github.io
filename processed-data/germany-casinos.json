@@ -1,6 +1,6 @@
 [
   {
-    "id": "de-GGL-2024-DE-10023",
+    "id": "de-ggl-10023",
     "brand_name": "Tipico Games",
     "is_featured": true,
     "official_url": "https://tipico.de",
@@ -8,18 +8,21 @@
     "license_number": "GGL-2024-DE-10023",
     "last_updated": "2026-07-20",
     "seo_meta": {
-      "card_title": "Tipico Games Germany License & RTP Metrics",
-      "alt_text": "Tipico Games official legal german casino logo"
+      "card_title": "Tipico Games Germany License & Review",
+      "alt_text": "Tipico games official logo verified by GGL"
     },
     "features": {
       "bonus_text": "100% Bonus bis zu 100€",
       "wagering_requirement": "30x",
       "average_rtp": "96.4%",
-      "payout_speed": "1-2 Tage"
+      "payout_speed": "1-2 Tage",
+      "min_deposit": "10€",
+      "payment_methods": "Sofort, PayPal, Visa, Mastercard, Giropay",
+      "crypto_supported": false
     }
   },
   {
-    "id": "de-GGL-2023-DE-10045",
+    "id": "de-ggl-10045",
     "brand_name": "bwin Slots",
     "is_featured": false,
     "official_url": "https://bwin.de",
@@ -27,18 +30,21 @@
     "license_number": "GGL-2023-DE-10045",
     "last_updated": "2026-07-20",
     "seo_meta": {
-      "card_title": "bwin Slots Germany License & RTP Metrics",
-      "alt_text": "bwin Slots official legal german casino logo"
+      "card_title": "bwin Slots Germany Licensing & Metrics",
+      "alt_text": "bwin slots official legal german casino logo"
     },
     "features": {
       "bonus_text": "50 Freispiele ohne Risiko",
-      "wagering_requirement": "30x",
+      "wagering_requirement": "1x",
       "average_rtp": "96.8%",
-      "payout_speed": "1-2 Tage"
+      "payout_speed": "Instant",
+      "min_deposit": "10€",
+      "payment_methods": "PayPal, Sofort, Visa, Mastercard, Neteller",
+      "crypto_supported": false
     }
   },
   {
-    "id": "de-GGL-2024-GER-10089",
+    "id": "de-ggl-10089",
     "brand_name": "Wildz Deutschland",
     "is_featured": false,
     "official_url": "https://wildz.de",
@@ -46,14 +52,61 @@
     "license_number": "GGL-2024-GER-10089",
     "last_updated": "2026-07-20",
     "seo_meta": {
-      "card_title": "Wildz Deutschland Germany License & RTP Metrics",
-      "alt_text": "Wildz Deutschland official legal german casino logo"
+      "card_title": "Wildz Germany Regulatory Review",
+      "alt_text": "Wildz Deutschland legal slot site logo"
     },
     "features": {
       "bonus_text": "100% Bonus bis zu 300€ + 200 Freispiele",
-      "wagering_requirement": "30x",
+      "wagering_requirement": "35x",
       "average_rtp": "96.5%",
-      "payout_speed": "1-2 Tage"
+      "payout_speed": "1-3 Tage",
+      "min_deposit": "10€",
+      "payment_methods": "Sofort, Trustly, Visa, Mastercard, Skrill",
+      "crypto_supported": false
+    }
+  },
+  {
+    "id": "de-ggl-10112",
+    "brand_name": "Wunderino",
+    "is_featured": false,
+    "official_url": "https://wunderino.de",
+    "affiliate_url": "",
+    "license_number": "GGL-2023-DE-10112",
+    "last_updated": "2026-07-20",
+    "seo_meta": {
+      "card_title": "Wunderino Germany Legal Status",
+      "alt_text": "Wunderino legal german slot brand logo"
+    },
+    "features": {
+      "bonus_text": "400% Bonus bis zu 40€ + 30 Freispiele",
+      "wagering_requirement": "30x",
+      "average_rtp": "96.1%",
+      "payout_speed": "1-2 Tage",
+      "min_deposit": "10€",
+      "payment_methods": "Sofort, PayPal, Trustly, Mastercard",
+      "crypto_supported": false
+    }
+  },
+  {
+    "id": "de-ggl-10220",
+    "brand_name": "DrückGlück",
+    "is_featured": false,
+    "official_url": "https://drueckglueck.de",
+    "affiliate_url": "",
+    "license_number": "GGL-2024-DE-10220",
+    "last_updated": "2026-07-20",
+    "seo_meta": {
+      "card_title": "DrückGlück Germany License Details",
+      "alt_text": "DrückGlück official legal casino logo"
+    },
+    "features": {
+      "bonus_text": "100% Bonus bis zu 100€ + 50 Freispiele",
+      "wagering_requirement": "30x",
+      "average_rtp": "96.3%",
+      "payout_speed": "1-2 Tage",
+      "min_deposit": "10€",
+      "payment_methods": "Sofort, PayPal, Visa, Mastercard, Paysafecard",
+      "crypto_supported": false
     }
   }
 ]
