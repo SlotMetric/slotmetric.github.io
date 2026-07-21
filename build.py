@@ -1,83 +1,84 @@
-# ==========================================
-# PART 1: CORE REVENUE & DATA PARSING
-# ==========================================
 import os
 import json
 import re
 
-def find_logo_case_insensitive(casino_id, logos_dir="assets/logos"):
+def get_casino_logo(casino_id, country_code):
     """
-    פונקציית מגן חדשה: מוצאת את קובץ הלוגו בתיקייה באופן אוטומטי
-    ומתעלמת לחלוטין מאותיות גדולות, קטנות או סיומות לא תואמות.
+    הפונקציה המקורית שלך ששונתה קלות: כעת היא בודקת קודם כל 
+    האם קיים לוגו בתיקיית assets/logos (ללא חשיבות לאותיות גדולות/קטנות).
+    אם לא נמצא, היא משתמשת בנתיב המקור הרגיל שלך.
     """
-    if not os.path.exists(logos_dir):
-        return None
-        
-    target = f"{str(casino_id).lower()}.png"
+    logos_dir = "assets/logos"
+    if os.path.exists(logos_dir):
+        target = f"{str(casino_id).lower()}.png"
+        for file_name in os.listdir(logos_dir):
+            if file_name.lower() == target:
+                return f"assets/logos/{file_name}"
     
-    # סריקה חכמה של כל הקבצים הקיימים בתיקיית הלוגואים שלך
-    for file_name in os.listdir(logos_dir):
-        if file_name.lower() == target or file_name.lower().startswith(str(casino_id).lower()):
-            return f"assets/logos/{file_name}"
-            
-    # ברירת מחדל אם לא נמצא קובץ תואם בכלל
-    return f"assets/logos/{casino_id}.png"
+    # ברירת המחדל המקורית שלך במידה ולא נמצא לוגו מותאם
+    return f"data-collectors/united-kingdom/logos/{casino_id}.png"
 
-def load_processed_data(data_dir="processed-data"):
-    """טעינת קבצי המידע והבונוסים המקוריים של האתר"""
+def load_processed_data():
     countries_data = {}
+    data_dir = "processed-data"
+    
     if not os.path.exists(data_dir):
-        print(f"⚠️ שגיאה: תיקיית הנתונים {data_dir} לא נמצאה.")
+        print(f"Error: Data directory '{data_dir}' not found.")
         return countries_data
-        
-    for file_name in os.listdir(data_dir):
-        if file_name.endswith(".json"):
-            country_code = file_name.split(".")[0].upper()
-            file_path = os.path.join(data_dir, file_name)
+
+    for filename in os.listdir(data_dir):
+        if filename.endswith(".json"):
+            country_code = filename.split(".")[0].upper()
+            filepath = os.path.join(data_dir, filename)
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(filepath, "r", encoding="utf-8") as f:
                     countries_data[country_code] = json.load(f)
             except Exception as e:
-                print(f"❌ שגיאה בטעינת הקובץ {file_name}: {e}")
+                print(f"Error reading {filename}: {e}")
+                
     return countries_data
-# ==========================================
-# PART 2: CARD GENERATION & HTML RENDERING
-# ==========================================
 
-def generate_cards_html(casino_list):
-    """מייצר את קוד ה-HTML העשיר עבור כרטיסיות הקזינו עם הלוגואים המוגנים"""
+def clean_html_template(html_content):
+    html_content = re.sub(r'<!--.*?-->', '', html_content, flags=re.DOTALL)
+    html_content = re.sub(r'^\s*$\n', '', html_content, flags=re.MULTILINE)
+    return html_content
+
+def generate_casino_cards(casinos, country_code):
     cards_html = ""
-    for casino in casino_list:
-        casino_id = casino.get("id", "default")
+    for casino in casinos:
+        casino_id = casino.get("id", "")
+        # שימוש בפונקציה המעודכנת שמוצאת את הלוגו שהעלית ב-GitHub
+        logo_file = get_casino_logo(casino_id, country_code)
         
-        # שימוש בפונקציית המגן החדשה לאיתור הלוגו ללא חשיבות לאותיות גדולות/קטנות
-        logo_path = find_logo_case_insensitive(casino_id)
-        
-        # חילוץ נתונים מקובץ ה-JSON המקורי שלך
+        name = casino.get("name", casino_id.upper())
         rating = casino.get("rating", "N/A")
-        bonus = casino.get("bonus", "No bonus available")
-        license_num = casino.get("license", "N/A")
+        bonus = casino.get("bonus", "No Welcome Bonus Available")
+        license_val = casino.get("license", "N/A")
         rtp = casino.get("rtp", "N/A")
-        min_dep = casino.get("min_deposit", "N/A")
-        crypto = "Yes (Crypto)" if casino.get("crypto", False) else "X No (Fiat)"
+        min_deposit = casino.get("min_deposit", "N/A")
         
-        # עיבוד רשימת אמצעי התשלום למבנה טקסט נקי
-        payments = ", ".join(casino.get("payments", [])) if casino.get("payments") else "N/A"
+        payments_list = casino.get("payments", [])
+        payments_str = ", ".join(payments_list) if payments_list else "N/A"
         
-        # בניית מבנה הכרטיסייה המקורי והעשיר שלך כפי שהיה
+        crypto_val = casino.get("crypto", "No")
+        crypto_str = "Yes (Crypto)" if crypto_val == "Yes" else "X No (Fiat)"
+        crypto_color = "#2f855a" if crypto_val == "Yes" else "#e53e3e"
+# ==========================================
+# PART 2: ORIGINAL CARD FORMATTING & MULTI-COUNTRY LOOP
+# ==========================================
         cards_html += f"""
         <div class="casino-card" style="border: 2px solid #eef2f5; padding: 25px; margin: 15px; border-radius: 12px; display: inline-block; background: #fff; text-align: left; width: 280px; box-shadow: 0 8px 16px rgba(0,0,0,0.04); vertical-align: top;">
             <div style="text-align: center; height: 70px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
-                <img src="{logo_path}" alt="{casino_id} logo" style="max-width: 180px; max-height: 60px; object-fit: contain;">
+                <img src="{logo_file}" alt="{name} logo" style="max-width: 180px; max-height: 60px; object-fit: contain;">
             </div>
             <div style="border-top: 1px solid #f1f4f6; padding-top: 10px; font-family: sans-serif; font-size: 13px; color: #4a5568;">
-                <p><strong>License:</strong> {license_num}</p>
+                <p><strong>License:</strong> {license_val}</p>
                 <p><strong>Rating:</strong> <span style="color: #2b6cb0; font-weight: bold;">{rating}/10</span></p>
                 <p><strong>Welcome Bonus:</strong> <span style="color: #2f855a; font-weight: bold;">{bonus}</span></p>
                 <p><strong>Average RTP:</strong> {rtp}</p>
-                <p><strong>Min Deposit:</strong> {min_dep}</p>
-                <p><strong>Payments:</strong> <span style="font-size: 11px;">{payments}</span></p>
-                <p><strong>Crypto Support:</strong> <span style="color: {'#2f855a' if 'Yes' in crypto else '#e53e3e'}; font-weight: bold;">{crypto}</span></p>
+                <p><strong>Min Deposit:</strong> {min_deposit}</p>
+                <p><strong>Payments:</strong> <span style="font-size: 11px;">{payments_str}</span></p>
+                <p><strong>Crypto Support:</strong> <span style="color: {crypto_color}; font-weight: bold;">{crypto_str}</span></p>
             </div>
             <div style="margin-top: 20px; text-align: center;">
                 <a href="#" style="background: #00e676; color: #fff; padding: 12px 30px; border-radius: 6px; text-decoration: none; font-weight: bold; display: block; font-family: sans-serif; box-shadow: 0 4px 10px rgba(0,230,118,0.3);">Verify & Play</a>
@@ -86,47 +87,42 @@ def generate_cards_html(casino_list):
         """
     return cards_html
 
-def build_project():
-    """הפונקציה המרכזית שמנהלת את הרכבת האתר מתוך התבניות והזרקת הנתונים"""
-    print("🏗️ מתחיל בתהליך הבנייה וההרכבה הרשמי של האתר...")
+def build():
+    countries_data = load_processed_data()
     
-    # 1. טעינת הנתונים המקוריים
-    all_data = load_processed_data()
-    if not all_data:
-        # אם אין נתונים, נייצר רשימת דמו למניעת קריסה (למשל לצורך הבדיקה הראשונית)
-        all_data = {"Global Market": [{"id": "bet365"}, {"id": "LeoVegas"}, {"id": "Unibet"}, {"id": "888"}]}
-    
-    # 2. יצירת סביבת העבודה בתיקיית public עבור ה-Action
-    if not os.path.exists("public"):
-        os.makedirs("public")
-        
     template_path = "templates/index.html"
-    output_html_path = "public/index.html"
-    
-    if os.path.exists(template_path):
-        try:
-            with open(template_path, 'r', encoding='utf-8') as f:
-                html_content = f.read()
+    if not os.path.exists(template_path):
+        print(f"Error: Template file '{template_path}' not found.")
+        return
+
+    with open(template_path, "r", encoding="utf-8") as f:
+        template_content = f.read()
+
+    # יצירת תיקיית הצינור עבור ה-GitHub Action
+    os.makedirs("public", exist_ok=True)
+
+    # מעבר על כל המדינות בדיוק כמו בקוד המקורי שלך
+    for country_code, casinos in countries_data.items():
+        country_name = country_code.replace("-", " ").title()
+        
+        cards_html = generate_casino_cards(casinos, country_code)
+        
+        page_content = template_content.replace("{{COUNTRY_NAME}}", country_name)
+        page_content = page_content.replace("{{CASINO_CARDS}}", cards_html)
+        page_content = clean_html_template(page_content)
+        
+        # בניית דפי המדינות בנתיבים המקוריים שלהם
+        if country_code == "UNITED-KINGDOM":
+            output_path = "public/index.html"
+        else:
+            country_dir = os.path.join("public", country_code.lower())
+            os.makedirs(country_dir, exist_ok=True)
+            output_path = os.path.join(country_dir, "index.html")
             
-            # שליפת המדינה הראשונה או לולאה (לצורך הדוגמה נשתמש במפתח הראשון)
-            country_name = list(all_data.keys())[0]
-            casinos = all_data[country_name]
+        with open(output_path, "w", encoding="utf-8") as f:
+            f.write(page_content)
             
-            # יצירת קוד הכרטיסיות העשיר והזרקתו
-            casino_cards_content = generate_cards_html(casinos)
-            
-            html_content = html_content.replace("{{COUNTRY_NAME}}", country_name)
-            html_content = html_content.replace("{{CASINO_CARDS}}", casino_cards_content)
-            
-            with open(output_html_path, 'w', encoding='utf-8') as f:
-                f.write(html_content)
-            print("✅ קובץ index.html והזרקת הנתונים נבנו בהצלחה בתיקיית public!")
-        except Exception as e:
-            print(f"❌ שגיאה בעיבוד קובץ ה-HTML: {e}")
-    else:
-        print("⚠️ אזהרה: קובץ templates/index.html לא נמצא!")
-    
-    print("\n🎉 תהליך הבנייה הסתיים בהצלחה מלאה!")
+        print(f"Successfully generated page for {country_name} -> {output_path}")
 
 if __name__ == "__main__":
-    build_project()
+    build()
