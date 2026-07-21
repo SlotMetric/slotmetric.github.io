@@ -40,11 +40,28 @@ def fetch_resource(name, url, target_dir="public/assets/logos"):
         print(f"❌ שגיאה בהורדת הלוגו {name}: {e}")
         return None
 # ==========================================
-# PART 2: CORE PROCESS & TEMPLATE BUILDING
+# PART 2: CORE PROCESS & CASINO CARDS INJECTION
 # ==========================================
 
+def generate_casino_cards_html():
+    """מייצר את קוד ה-HTML עבור כרטיסיות הקזינו עם הלוגואים החדשים"""
+    cards_html = ""
+    
+    # בניית מבנה כרטיסיות מעוצב לכל מותג שהעלית
+    for brand in LOGOS_CONFIG.keys():
+        # התאמת נתיב הלוגו המקומי שנוצר בתיקיית public
+        logo_path = f"assets/logos/{brand}.png"
+        
+        cards_html += f"""
+        <div class="casino-card" style="border: 1px solid #ddd; padding: 20px; margin: 10px; border-radius: 8px; display: inline-block; background: #fff; text-align: center; width: 200px;">
+            <img src="{logo_path}" alt="{brand} logo" style="max-width: 150px; max-height: 60px; object-fit: contain; margin-bottom: 10px;">
+            <h3 style="margin: 5px 0; color: #333; text-transform: capitalize;">{brand}</h3>
+        </div>
+        """
+    return cards_html
+
 def build_project():
-    """הפונקציה המרכזית שמנהלת את תהליך הבנייה של הפרויקט והעתקת הדפים"""
+    """הפונקציה המרכזית שמנהלת את תהליך הבנייה והזרקת הנתונים לאתר"""
     print("🏗️ מתחיל בתהליך הבנייה וההרכבה של האתר...")
     
     # 1. אתחול סביבת העבודה ותיקיית public
@@ -55,8 +72,8 @@ def build_project():
     for brand_name, logo_url in LOGOS_CONFIG.items():
         fetch_resource(brand_name, logo_url)
         
-    # 3. בנייה והעתקה של קובץ ה-index.html מתוך תיקיית templates
-    print("\n📊 מעבד את תבנית האתר ומקים את דף הבית...")
+    # 3. בנייה והזרקת נתונים לתוך קובץ ה-index.html
+    print("\n📊 מעבד את תבנית האתר ומזריק את הכרטיסיות...")
     template_path = "templates/index.html"
     output_html_path = "public/index.html"
     
@@ -64,12 +81,17 @@ def build_project():
         try:
             with open(template_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
-                
-            # כאן ניתן להוסיף הזרקת נתונים דינמית לתוך ה-HTML במידת הצורך
+            
+            # יצירת ה-HTML של הכרטיסיות באופן דינמי
+            casino_cards_content = generate_casino_cards_html()
+            
+            # החלפת מחזיקי המקום (Placeholders) בתוכן האמיתי
+            html_content = html_content.replace("{{COUNTRY_NAME}}", "Global Market")
+            html_content = html_content.replace("{{CASINO_CARDS}}", casino_cards_content)
             
             with open(output_html_path, 'w', encoding='utf-8') as f:
                 f.write(html_content)
-            print("✅ קובץ index.html נוצר בהצלחה בתוך תיקיית public!")
+            print("✅ קובץ index.html נוצר והוזרק בהצלחה בתוך תיקיית public!")
         except Exception as e:
             print(f"❌ שגיאה בעיבוד קובץ ה-HTML: {e}")
     else:
