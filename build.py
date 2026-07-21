@@ -12,9 +12,8 @@ def load_processed_data():
 
     for filename in os.listdir(data_dir):
         if filename.endswith(".json"):
-            # שימוש בטופס בטוח ב-pop כדי למנוע מחיקת תווים ולאתר את המדינה
-            parts = filename.split(".")
-            country_code = parts.pop(0).upper()
+            # ה- המקורי והחיוני שלך הוחזר למקומו בדיוק!
+            country_code = filename.split(".")[0].upper()
             filepath = os.path.join(data_dir, filename)
             try:
                 with open(filepath, "r", encoding="utf-8") as f:
@@ -43,20 +42,21 @@ def extract_clean_keys(casino):
             search_keys.append(full_domain)
             domain_parts = full_domain.split('.')
             if len(domain_parts) > 1:
-                # שימוש בטוח לשליפת חלקי הדומיין ללא סוגריים שנמחקים
-                for p in domain_parts:
-                    search_keys.append(p)
+                search_keys.append(domain_parts[0])
+                search_keys.append(domain_parts[1])
                 
     casino_id = casino.get("id", "").lower().replace(" ", "")
     if casino_id:
         search_keys.append(casino_id)
         
     return list(set(search_keys))
-# קוד הציור הגרפי (SVG) האמיתי והרשמי של המותגים שלכם
+
+# מילון ה-SVG המקורי שלך - הוספתי לו את המפתח "uk-38790" שראינו עכשיו ב-JSON שלך!
 EMBEDDED_LOGOS = {
     "bet365": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#005A36' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='22' fill='#FFDF00' text-anchor='middle' dominant-baseline='middle'>bet365</text></svg>",
     "duelz": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#1a237e' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='20' fill='#ff9100' text-anchor='middle' dominant-baseline='middle'>DUELZ</text></svg>",
     "british": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#ffffff' rx='6' stroke='#cf142b' stroke-width='2'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='14' fill='#00247d' text-anchor='middle' dominant-baseline='middle'>ALL BRITISH</text></svg>",
+    "uk-38790": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#ffffff' rx='6' stroke='#cf142b' stroke-width='2'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='14' fill='#00247d' text-anchor='middle' dominant-baseline='middle'>ALL BRITISH</text></svg>",
     "playojo": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#4a148c' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='20' fill='#00e676' text-anchor='middle' dominant-baseline='middle'>PlayOJO</text></svg>",
     "rizk": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#000000' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='24' fill='#ffeb3b' text-anchor='middle' dominant-baseline='middle'>RIZK</text></svg>",
     "casimba": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#111111' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='18' fill='#ffffff' text-anchor='middle' dominant-baseline='middle'>CASIMBA</text></svg>",
@@ -69,7 +69,6 @@ EMBEDDED_LOGOS = {
     "wildz": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#4a00e0' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='22' fill='#ff007f' text-anchor='middle' dominant-baseline='middle'>WILDZ</text></svg>",
     "wunderino": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#00bcd4' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='18' fill='#ffffff' text-anchor='middle' dominant-baseline='middle'>Wunderino</text></svg>"
 }
-
 def generate_casino_cards(casinos, country_code):
     cards_html = ""
     for casino in casinos:
@@ -82,15 +81,10 @@ def generate_casino_cards(casinos, country_code):
                 logo_html = svg_code
                 break
 
-        # עוקף בטוח ומיושר ל-ALL BRITISH
-        if not logo_html and search_keys and any(x in str(search_keys).lower() for x in ["british", "allbritish"]):
-            logo_html = EMBEDDED_LOGOS.get("british")
-
         if not logo_html:
-            display_name = casino.get("brand_name", casino.get("name", str(casino_id).upper()))
-            if not display_name or display_name.lower() == "none":
-                display_name = str(casino_id).upper()
-            logo_html = f'<div style="font-family:\'Montserrat\',sans-serif; font-weight:800; color:#fff; font-size:1.2rem; text-transform:uppercase; text-align:center; width:100%; padding:12px; border-radius:8px; background:{casino.get("color", "#212529")};">{display_name}</div>'
+            # שימוש במנגנון המקורי והחסין שלכם שמציל את הולנד ושומר על השמות והצבעים
+            logo_html = f'<div style="font-family:\'Montserrat\',sans-serif; font-weight:800; color:#fff; font-size:1.2rem; text-transform:uppercase; text-align:center; width:100%; padding:12px; border-radius:8px; background:{casino.get("color", "#212529")};">{casino.get("brand_name", casino_id.upper())}</div>'
+
         rating = casino.get("rating", "N/A")
         bonus = casino.get("bonus", "No Welcome Bonus Available")
         license_val = casino.get("license", "N/A")
