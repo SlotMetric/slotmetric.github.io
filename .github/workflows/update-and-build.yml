@@ -1,59 +1,57 @@
-name: SlotMetric Data Sync & Static Build
+name: Update Data and Build Site
 
 on:
   schedule:
-    - cron: '0 0 * * 0' # רץ אוטומטית בכל יום ראשון בחצות
-  workflow_dispatch: # מאפשר לנו להפעיל אותו ידנית בכל רגע בלחיצת כפתור
+    - cron: '0 0 * * *' # רץ אוטומטית כל יום בחצות
+  workflow_dispatch: # מאפשר לך להפעיל ידנית מתי שבא לך
 
 permissions:
-  contents: write
-  pages: write
-  id-token: write
+  contents: write # ◄◄◄ השורה הקריטית שמאפשרת ל-Actions לשמור את התמונות בריפו!
 
 jobs:
-  update-and-deploy:
+  update-and-build:
     runs-on: ubuntu-latest
-    
-    # הוספת הגדרת הסביבה הרשמית של גיטהב פייג'ס לפתרון השגיאה
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # מוריד את כל ההיסטוריה כדי למנוע שגיאות גיט בהעלאה
 
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.10'
 
-      - name: Run Data Collectors
+      - name: Install dependencies
         run: |
-          echo "📥 Fetching UKGC Data..."
-          python data-collectors/ukgc_fetcher.py
+          python -m pip upgrade pip
+          # אם יש דרישות נוספות, ניתן להוסיף כאן (למשל pip install requests)
+
+      - name: Run Build and Logo Downloader
+        run: python build.py
+
+      - name: Commit and Push new logos if downloaded
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          echo "📥 Fetching GGL Germany Data..."
-          python data-collectors/ggl_fetcher.py
+          # מוסיף רק את תיקיית הלוגואים למעקב
+          git add assets/logos/
+          
+          # בודק אם יש שינויים (כלומר אם ירדו תמונות חדשות) ואם כן - מבצע קומיט ודחיפה
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "chore: auto-download missing casino logos [skip ci]"
+            git push origin main || git push origin master
+            echo "✅ New logos pushed back to repository!"
+          else
+            echo "✨ No new logos were downloaded."
+          fi
 
-      - name: Commit and Push Updated Data
-        run: |
-          git config --global user.name "SlotMetric Bot"
-          git config --global user.email "bot@slotmetric.com"
-          git add processed-data/*.json
-          git diff-index --quiet HEAD || git commit -m "🤖 SlotMetric Auto-Data-Update: $(date +'%Y-%m-%d')"
-          git push
-
-      - name: Build Static HTML Pages
-        run: |
-          echo "🏗️ Generating SEO Optimized HTML Structure..."
-          python build.py
-
-      - name: Upload Artifact
+      - name: Upload production artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './public'
+          path: public/
 
       - name: Deploy to GitHub Pages
         id: deployment
