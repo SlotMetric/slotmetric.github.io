@@ -14,14 +14,14 @@ LOGOS_CONFIG = {
 }
 
 def init_environment():
-    """יצירת התיקיות הנדרשות לבניית הפרויקט"""
-    directories = ["dist", "dist/assets", "dist/assets/logos"]
+    """יצירת התיקיות הנדרשות לבניית הפרויקט - מותאם לתיקיית public"""
+    directories = ["public", "public/assets", "public/assets/logos"]
     for directory in directories:
         if not os.path.exists(directory):
             os.makedirs(directory)
             print(f"📁 נוצרה תיקייה: {directory}")
 
-def fetch_resource(name, url, target_dir="dist/assets/logos"):
+def fetch_resource(name, url, target_dir="public/assets/logos"):
     """פונקציה להורדת משאבים מרוחקים בצורה בטוחה"""
     ext = url.split('.')[-1]
     filepath = os.path.join(target_dir, f"{name}.{ext}")
@@ -47,7 +47,7 @@ def build_project():
     """הפונקציה המרכזית שמנהלת את תהליך הבנייה של הפרויקט"""
     print("🏗️ מתחיל בתהליך הבנייה וההרכבה של האתר...")
     
-    # 1. אתחול סביבת העבודה והתיקיות
+    # 1. אתחול סביבת העבודה ותיקיית public
     init_environment()
     
     # 2. לולאת הורדה וסנכרון של הלוגואים החדשים שלך
@@ -56,7 +56,7 @@ def build_project():
         fetch_resource(brand_name, logo_url)
         
     print("\n📊 מעבד נתונים ומייצר קבצי תשתית לאתר...")
-    # כאן הקוד שלך יכול להמשיך לייצור קבצי HTML/JS בהתאם לצורך
+    # כאן הקוד יכול להמשיך לייצור קבצי HTML/JS נוספים בתוך תיקיית public במידת הצורך
     
     print("\n🎉 תהליך הבנייה הסתיים בהצלחה מלאה!")
 
