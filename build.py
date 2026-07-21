@@ -82,7 +82,7 @@ def build_casino_cards(json_path):
                 logo_html = svg_code
                 break
                 
-          if not logo_html:
+        if not logo_html:
             file_found = False
             if os.path.exists("assets/logos") and search_keys:
                 primary_key = next(iter(search_keys), "").lower()
