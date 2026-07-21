@@ -2,6 +2,7 @@ import os
 import json
 import urllib.request
 import shutil
+import time
 from urllib.parse import urlparse
 
 TEMPLATE_PATH = "templates/index.html"
@@ -31,13 +32,11 @@ def extract_domain(casino):
                     return domain
             except:
                 pass
-                
-    # גיבוי אם אין קישור תקין - נשתמש בשם המותג
     brand = casino.get("brand_name", "").lower().replace(" ", "").replace("casino", "")
     return f"{brand}.com"
 
 def download_logo_if_needed(brand_key, domain_name):
-    """מוריד את הלוגו לפי הדומיין האמיתי לתיקיית הריפו ומעתיק ל-public"""
+    """מוריד את הלוגו לפי הדומיין האמיתי עם השהיה קלה למניעת חסימות בוטים"""
     os.makedirs(REPO_LOGOS_DIR, exist_ok=True)
     os.makedirs(PUBLIC_LOGOS_DIR, exist_ok=True)
     
@@ -46,19 +45,24 @@ def download_logo_if_needed(brand_key, domain_name):
     public_path = os.path.join(PUBLIC_LOGOS_DIR, filename)
     
     if not os.path.exists(repo_path):
-        print(f"📥 Downloading logo for {brand_key} using domain: {domain_name}...")
+        print(f"📥 Anti-Block delay applied. Fetching: {brand_key} ({domain_name})...")
+        time.sleep(1.5)  # ◄◄◄ השהיה של שנייה וחצי בין קריאה לקריאה כדי לעקוף את מנגנון ההגנה
+        
         url = BASE_DOWNLOAD_URL.format(domain_name)
         try:
-            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'})
-            with urllib.request.urlopen(req, timeout=10) as response, open(repo_path, 'wb') as out_file:
+            req = urllib.request.Request(url, headers={
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            })
+            with urllib.request.urlopen(req, timeout=12) as response, open(repo_path, 'wb') as out_file:
                 out_file.write(response.read())
-            print(f"✅ Saved to assets/logos/: {filename}")
+            print(f"✅ Successfully saved: {filename}")
         except Exception as e:
-            print(f"❌ Download failed for {brand_key} ({domain_name}): {e}")
+            print(f"❌ Server rejected request for {brand_key} ({domain_name}): {e}")
             return None
             
     if os.path.exists(repo_path):
-        shutil.copy(repo_path, public_path)
+        if not os.path.exists(public_path):
+            shutil.copy(repo_path, public_path)
         return filename
     return None
 
@@ -90,10 +94,7 @@ def build_casino_cards(json_path, is_subfolder):
         is_featured = casino.get("is_featured") == True
         features = casino.get("features", {})
         
-        # יצירת מפתח שם נקי לקובץ התמונה (למשל 'bet365' או 'allbritish')
         brand_key = casino.get("brand_name", "").lower().replace(" ", "").replace("casino", "")
-        
-        # חילוץ הדומיין האמיתי לצורך ההורדה (למשל 'allbritishcasino.com')
         domain_name = extract_domain(casino)
         
         logo_filename = download_logo_if_needed(brand_key, domain_name)
@@ -149,6 +150,6 @@ def main():
         if is_subfolder and not os.path.exists(os.path.dirname(output_file_path)): os.makedirs(os.path.dirname(output_file_path))
         
         with open(output_file_path, "w", encoding="utf-8") as f: f.write(page_content)
-    print("✅ Success: Built and saved logos locally using smart domain extraction.")
+    print("✅ Success: Built and saved logos with anti-block tactics.")
 
 if __name__ == "__main__": main()
