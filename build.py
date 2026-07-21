@@ -2,22 +2,6 @@ import os
 import json
 import re
 
-def get_casino_logo(casino_id, country_code):
-    """
-    הפונקציה המקורית שלך ששונתה קלות: כעת היא בודקת קודם כל 
-    האם קיים לוגו בתיקיית assets/logos (ללא חשיבות לאותיות גדולות/קטנות).
-    אם לא נמצא, היא משתמשת בנתיב המקור הרגיל שלך.
-    """
-    logos_dir = "assets/logos"
-    if os.path.exists(logos_dir):
-        target = f"{str(casino_id).lower()}.png"
-        for file_name in os.listdir(logos_dir):
-            if file_name.lower() == target:
-                return f"assets/logos/{file_name}"
-    
-    # ברירת המחדל המקורית שלך במידה ולא נמצא לוגו מותאם
-    return f"data-collectors/united-kingdom/logos/{casino_id}.png"
-
 def load_processed_data():
     countries_data = {}
     data_dir = "processed-data"
@@ -28,6 +12,7 @@ def load_processed_data():
 
     for filename in os.listdir(data_dir):
         if filename.endswith(".json"):
+            # חילוץ קוד המדינה משם הקובץ
             country_code = filename.split(".")[0].upper()
             filepath = os.path.join(data_dir, filename)
             try:
@@ -39,7 +24,9 @@ def load_processed_data():
     return countries_data
 
 def clean_html_template(html_content):
+    # הסרת הערות HTML
     html_content = re.sub(r'<!--.*?-->', '', html_content, flags=re.DOTALL)
+    # הסרת שורות ריקות מיותרות
     html_content = re.sub(r'^\s*$\n', '', html_content, flags=re.MULTILINE)
     return html_content
 
@@ -47,9 +34,20 @@ def generate_casino_cards(casinos, country_code):
     cards_html = ""
     for casino in casinos:
         casino_id = casino.get("id", "")
-        # שימוש בפונקציה המעודכנת שמוצאת את הלוגו שהעלית ב-GitHub
-        logo_file = get_casino_logo(casino_id, country_code)
         
+        # -------------------------------------------------------------
+        # התיקון היחיד: בדיקה חכמה ולא רגישה לאותיות גדולות/קטנות בתיקיית assets/logos
+        # -------------------------------------------------------------
+        logo_file = f"data-collectors/united-kingdom/logos/{casino_id}.png"  # ברירת המחדל המקורית שלך
+        logos_dir = "assets/logos"
+        if os.path.exists(logos_dir):
+            target_filename = f"{str(casino_id).lower()}.png"
+            for file_name in os.listdir(logos_dir):
+                if file_name.lower() == target_filename:
+                    logo_file = f"assets/logos/{file_name}"
+                    break
+        # -------------------------------------------------------------
+
         name = casino.get("name", casino_id.upper())
         rating = casino.get("rating", "N/A")
         bonus = casino.get("bonus", "No Welcome Bonus Available")
@@ -64,7 +62,7 @@ def generate_casino_cards(casinos, country_code):
         crypto_str = "Yes (Crypto)" if crypto_val == "Yes" else "X No (Fiat)"
         crypto_color = "#2f855a" if crypto_val == "Yes" else "#e53e3e"
 # ==========================================
-# PART 2: ORIGINAL CARD FORMATTING & MULTI-COUNTRY LOOP
+# PART 2: ORIGINAL CARD FORMATTING & MULTI-COUNTRY LOOP (FROM GOOGLE DOCS)
 # ==========================================
         cards_html += f"""
         <div class="casino-card" style="border: 2px solid #eef2f5; padding: 25px; margin: 15px; border-radius: 12px; display: inline-block; background: #fff; text-align: left; width: 280px; box-shadow: 0 8px 16px rgba(0,0,0,0.04); vertical-align: top;">
@@ -88,6 +86,7 @@ def generate_casino_cards(casinos, country_code):
     return cards_html
 
 def build():
+    # טעינת הנתונים
     countries_data = load_processed_data()
     
     template_path = "templates/index.html"
@@ -98,20 +97,23 @@ def build():
     with open(template_path, "r", encoding="utf-8") as f:
         template_content = f.read()
 
-    # יצירת תיקיית הצינור עבור ה-GitHub Action
+    # יצירת תיקיית הפלט עבור ה-Action
     os.makedirs("public", exist_ok=True)
 
-    # מעבר על כל המדינות בדיוק כמו בקוד המקורי שלך
+    # מעבר על המדינות
     for country_code, casinos in countries_data.items():
         country_name = country_code.replace("-", " ").title()
         
         cards_html = generate_casino_cards(casinos, country_code)
         
+        # החלפת מחזיקי המקום
         page_content = template_content.replace("{{COUNTRY_NAME}}", country_name)
         page_content = page_content.replace("{{CASINO_CARDS}}", cards_html)
+        
+        # ניקוי ה-HTML
         page_content = clean_html_template(page_content)
         
-        # בניית דפי המדינות בנתיבים המקוריים שלהם
+        # קביעת נתיב הפלט המדויק שלך
         if country_code == "UNITED-KINGDOM":
             output_path = "public/index.html"
         else:
