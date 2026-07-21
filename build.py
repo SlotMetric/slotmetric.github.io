@@ -1,9 +1,12 @@
 import os
 import json
-from urllib.parse import urlparse
 
 TEMPLATE_PATH = "templates/index.html"
 OUTPUT_DIR = "public"
+# תיקיית המקור שבה העלית את הלוגואים האמיתיים
+REPO_LOGOS_DIR = os.path.join("assets", "logos")
+# תיקיית היעד הציבורית שהאתר קורא ממנה
+PUBLIC_LOGOS_DIR = os.path.join(OUTPUT_DIR, "assets", "logos")
 
 COUNTRIES_CONFIG = {
     "uk": {"country_name": "United Kingdom", "data_file": "processed-data/uk-casinos.json"},
@@ -13,38 +16,13 @@ COUNTRIES_CONFIG = {
     "es": {"country_name": "Spain (España)", "data_file": "processed-data/spain-casinos.json"}
 }
 
-# קוד הציור הגרפי (SVG) האמיתי והרשמי של המותגים שלכם
-EMBEDDED_LOGOS = {
-    "bet365": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#005A36' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='22' fill='#FFDF00' text-anchor='middle' dominant-baseline='middle'>bet365</text></svg>",
-    "duelz": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#1a237e' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='20' fill='#ff9100' text-anchor='middle' dominant-baseline='middle'>DUELZ</text></svg>",
-    "allbritish": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#ffffff' rx='6' stroke='#cf142b' stroke-width='2'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='14' fill='#00247d' text-anchor='middle' dominant-baseline='middle'>ALL BRITISH</text></svg>",
-    "playojo": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#4a148c' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='20' fill='#00e676' text-anchor='middle' dominant-baseline='middle'>PlayOJO</text></svg>",
-    "rizk": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#000000' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='24' fill='#ffeb3b' text-anchor='middle' dominant-baseline='middle'>RIZK</text></svg>",
-    "casimba": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#111111' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='18' fill='#ffffff' text-anchor='middle' dominant-baseline='middle'>CASIMBA</text></svg>",
-    "888": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#222222' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='22' fill='#8dfc00' text-anchor='middle' dominant-baseline='middle'>888casino</text></svg>",
-    "mrgreen": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#004d40' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='16' fill='#ffffff' text-anchor='middle' dominant-baseline='middle'>mr green</text></svg>",
-    "grosvenor": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#001834' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='14' fill='#ffffff' text-anchor='middle' dominant-baseline='middle'>GROSVENOR</text></svg>",
-    "leovegas": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#f57c00' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='18' fill='#ffffff' text-anchor='middle' dominant-baseline='middle'>LeoVegas</text></svg>",
-    "tipico": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#ff0000' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='22' fill='#ffffff' text-anchor='middle' dominant-baseline='middle'>Tipico</text></svg>",
-    "bwin": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#000000' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='24' fill='#fdd835' text-anchor='middle' dominant-baseline='middle'>bwin</text></svg>",
-    "wildz": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#4a00e0' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='22' fill='#ff007f' text-anchor='middle' dominant-baseline='middle'>WILDZ</text></svg>",
-    "wunderino": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#00bcd4' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='18' fill='#ffffff' text-anchor='middle' dominant-baseline='middle'>Wunderino</text></svg>"
-}
-def extract_clean_keys(casino):
-    """מחלץ מפתחות חיפוש נקיים משם המותג ומהקישורים שב-JSON"""
-    keys = []
-    brand = casino.get("brand_name", "").lower().replace(" ", "")
-    keys.append(brand)
-    
-    for url_key in ["official_url", "affiliate_url"]:
-        url = casino.get(url_key, "")
-        if url and "http" in url:
-            try:
-                domain = urlparse(url).netloc.lower()
-                keys.append(domain)
-            except:
-                pass
-    return keys
+def get_existing_logo_file(brand_key):
+    """בודק איזה קובץ לוגו אמיתי קיים בתיקיית הנכסים (PNG או SVG)"""
+    for ext in [".png", ".svg", ".jpg", ".jpeg"]:
+        filename = f"{brand_key}{ext}"
+        if os.path.exists(os.path.join(REPO_LOGOS_DIR, filename)):
+            return filename
+    return None
 
 def load_template():
     if os.path.exists(TEMPLATE_PATH):
@@ -52,7 +30,7 @@ def load_template():
             return f.read()
     return "<html><body><h1>{{COUNTRY_NAME}}</h1><div>{{CASINO_CARDS}}</div></body></html>"
 
-def build_casino_cards(json_path):
+def build_casino_cards(json_path, is_subfolder):
     if not os.path.exists(json_path): return "<!-- No data -->"
     with open(json_path, "r", encoding="utf-8") as f: casinos = json.load(f)
     
@@ -74,16 +52,25 @@ def build_casino_cards(json_path):
         is_featured = casino.get("is_featured") == True
         features = casino.get("features", {})
         
-        search_keys = extract_clean_keys(casino)
+        # חילוץ מפתח נקי של המותג (למשל 'bet365')
+        brand_key = casino.get("brand_name", "").lower().replace(" ", "").replace("casino", "")
         
-        logo_html = None
-        for key, svg_code in EMBEDDED_LOGOS.items():
-            if any(key in k for k in search_keys):
-                logo_html = svg_code
-                break
-                
-        if not logo_html:
-            logo_html = f'<div style="font-family:\'Montserrat\',sans-serif; font-weight:800; color:#1a237e; font-size:1.2rem; text-transform:uppercase; text-align:center; width:100%; border:1px solid #ccc; padding:8px; border-radius:6px;">{casino["brand_name"]}</div>'
+        # חיפוש קובץ הלוגו האמיתי שהעלית לתיקייה
+        logo_filename = get_existing_logo_file(brand_key)
+        
+        if logo_filename:
+            # העתקת הקובץ לתיקיית האתר הציבורית בזמן ה-Build
+            os.makedirs(PUBLIC_LOGOS_DIR, exist_ok=True)
+            import shutil
+            shutil.copy(os.path.join(REPO_LOGOS_DIR, logo_filename), os.path.join(PUBLIC_LOGOS_DIR, logo_filename))
+            
+            # יצירת תגית התמונה עבור הלוגו המקורי
+            path_prefix = "../" if is_subfolder else ""
+            final_src = f"{path_prefix}assets/logos/{logo_filename}"
+            logo_html = f'<img src="{final_src}" alt="{casino["brand_name"]}" style="max-height: 50px; max-width: 150px; object-fit: contain; display: block; margin: 0 auto;">'
+        else:
+            # גיבוי טקסט אלגנטי רק אם שכחת להעלות קובץ עבור קזינו מסוים
+            logo_html = f'<div style="font-family:\'Montserrat\',sans-serif; font-weight:700; color:#455a64; font-size:1.2rem; text-align:center;">{casino["brand_name"]}</div>'
             
         card_class = "casino-card featured" if is_featured else "casino-card"
         badge_html = '<span class="sponsored-tag">★ Sponsored TOP</span>' if is_featured else f'<span class="score-tag">Rating: {casino.get("calculated_score", 8.5)}/10</span>'
@@ -119,15 +106,16 @@ def main():
     template = load_template()
     
     for code, config in COUNTRIES_CONFIG.items():
-        cards_html = build_casino_cards(config["data_file"])
+        is_subfolder = (code != "uk")
+        cards_html = build_casino_cards(config["data_file"], is_subfolder)
         
         page_content = template.replace("{{COUNTRY_NAME}}", config["country_name"]).replace("{{CASINO_CARDS}}", cards_html)
         page_content = page_content.replace("{{PAGE_TITLE}}", "SlotMetric Database").replace("{{LANG_CODE}}", "en").replace("{{COUNTRY_CODE}}", code)
         
         output_file_path = os.path.join(OUTPUT_DIR, "index.html") if code == "uk" else os.path.join(OUTPUT_DIR, code, "index.html")
-        if (code != "uk") and not os.path.exists(os.path.dirname(output_file_path)): os.makedirs(os.path.dirname(output_file_path))
+        if is_subfolder and not os.path.exists(os.path.dirname(output_file_path)): os.makedirs(os.path.dirname(output_file_path))
         
         with open(output_file_path, "w", encoding="utf-8") as f: f.write(page_content)
-    print("✅ Success: Built perfectly with bulletproof inline SVGs.")
+    print("✅ Success: Built perfectly using uploaded local files.")
 
 if __name__ == "__main__": main()
