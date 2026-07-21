@@ -78,7 +78,8 @@ def build_casino_cards(json_path):
         search_keys = extract_clean_keys(casino)
         
         logo_html = None
- \        for key, svg_code in EMBEDDED_LOGOS.items():
+ \      
+        for key, svg_code in EMBEDDED_LOGOS.items():
             if any(key in k for k in search_keys):
                 logo_html = svg_code
                 break
