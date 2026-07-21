@@ -6,7 +6,9 @@ on:
   workflow_dispatch: # מאפשר לך להפעיל ידנית מתי שבא לך
 
 permissions:
-  contents: write # מאפשר ל-Actions לשמור את התמונות בריפו
+  contents: write  # מאפשר לשמור את התמונות שהורדו בחזרה לתוך התיקייה בריפו
+  id-token: write  # ◄◄◄ השורה שהייתה חסרה! מאפשרת לגיטהב לבצע את ה-Deploy ל-Pages
+  pages: write     # נותן הרשאה מלאה לעדכון דפי האתר
 
 jobs:
   update-and-build:
@@ -26,7 +28,6 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # התקנת חבילות בסיסיות ליתר ביטחון
           python -m pip install requests urllib3
 
       - name: Run Build and Logo Downloader
@@ -37,11 +38,9 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@://github.com"
           
-          # יצירת התיקייה ליתר ביטחון כדי שפקודת ה-git add לא תיכשל אם היא ריקה
           mkdir -p assets/logos/
           git add assets/logos/
           
-          # בדיקה אם יש שינויים (תמונות חדשות) וביצוע קומיט
           if ! git diff-index --quiet HEAD; then
             git commit -m "chore: auto-download missing casino logos [skip ci]"
             git push origin main || git push origin master
