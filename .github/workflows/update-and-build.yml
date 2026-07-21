@@ -6,7 +6,7 @@ on:
   workflow_dispatch: # מאפשר לך להפעיל ידנית מתי שבא לך
 
 permissions:
-  contents: write # ◄◄◄ השורה הקריטית שמאפשרת ל-Actions לשמור את התמונות בריפו!
+  contents: write # מאפשר ל-Actions לשמור את התמונות בריפו
 
 jobs:
   update-and-build:
@@ -25,8 +25,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip upgrade pip
-          # אם יש דרישות נוספות, ניתן להוסיף כאן (למשל pip install requests)
+          python -m pip install --upgrade pip
+          # התקנת חבילות בסיסיות ליתר ביטחון
+          python -m pip install requests urllib3
 
       - name: Run Build and Logo Downloader
         run: python build.py
@@ -34,12 +35,13 @@ jobs:
       - name: Commit and Push new logos if downloaded
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.email "github-actions[bot]@://github.com"
           
-          # מוסיף רק את תיקיית הלוגואים למעקב
+          # יצירת התיקייה ליתר ביטחון כדי שפקודת ה-git add לא תיכשל אם היא ריקה
+          mkdir -p assets/logos/
           git add assets/logos/
           
-          # בודק אם יש שינויים (כלומר אם ירדו תמונות חדשות) ואם כן - מבצע קומיט ודחיפה
+          # בדיקה אם יש שינויים (תמונות חדשות) וביצוע קומיט
           if ! git diff-index --quiet HEAD; then
             git commit -m "chore: auto-download missing casino logos [skip ci]"
             git push origin main || git push origin master
