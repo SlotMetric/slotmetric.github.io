@@ -1,134 +1,123 @@
 import os
 import json
-from urllib.parse import urlparse
+import re
 
-TEMPLATE_PATH = "templates/index.html"
-OUTPUT_DIR = "public"
-
-COUNTRIES_CONFIG = {
-    "uk": {"country_name": "United Kingdom", "data_file": "processed-data/uk-casinos.json"},
-    "de": {"country_name": "Germany (Deutschland)", "data_file": "processed-data/germany-casinos.json"},
-    "nl": {"country_name": "Netherlands (Nederland)", "data_file": "processed-data/netherlands-casinos.json"},
-    "se": {"country_name": "Sweden (Sverige)", "data_file": "processed-data/sweden-casinos.json"},
-    "es": {"country_name": "Spain (España)", "data_file": "processed-data/spain-casinos.json"}
-}
-
-# קוד הציור הגרפי (SVG) האמיתי והרשמי של המותגים שלכם
-EMBEDDED_LOGOS = {
-    "bet365": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#005A36' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='22' fill='#FFDF00' text-anchor='middle' dominant-baseline='middle'>bet365</text></svg>",
-    "duelz": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#1a237e' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='20' fill='#ff9100' text-anchor='middle' dominant-baseline='middle'>DUELZ</text></svg>",
-    "allbritish": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#ffffff' rx='6' stroke='#cf142b' stroke-width='2'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='14' fill='#00247d' text-anchor='middle' dominant-baseline='middle'>ALL BRITISH</text></svg>",
-    "playojo": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#4a148c' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='20' fill='#00e676' text-anchor='middle' dominant-baseline='middle'>PlayOJO</text></svg>",
-    "rizk": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#000000' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='24' fill='#ffeb3b' text-anchor='middle' dominant-baseline='middle'>RIZK</text></svg>",
-    "casimba": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#111111' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='18' fill='#ffffff' text-anchor='middle' dominant-baseline='middle'>CASIMBA</text></svg>",
-    "888": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#222222' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='22' fill='#8dfc00' text-anchor='middle' dominant-baseline='middle'>888casino</text></svg>",
-    "mrgreen": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#004d40' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='16' fill='#ffffff' text-anchor='middle' dominant-baseline='middle'>mr green</text></svg>",
-    "grosvenor": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#001834' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='14' fill='#ffffff' text-anchor='middle' dominant-baseline='middle'>GROSVENOR</text></svg>",
-    "leovegas": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#f57c00' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='18' fill='#ffffff' text-anchor='middle' dominant-baseline='middle'>LeoVegas</text></svg>",
-    "tipico": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#ff0000' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='22' fill='#ffffff' text-anchor='middle' dominant-baseline='middle'>Tipico</text></svg>",
-    "bwin": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#000000' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='24' fill='#fdd835' text-anchor='middle' dominant-baseline='middle'>bwin</text></svg>",
-    "wildz": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#4a00e0' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='22' fill='#ff007f' text-anchor='middle' dominant-baseline='middle'>WILDZ</text></svg>",
-    "wunderino": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#00bcd4' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='18' fill='#ffffff' text-anchor='middle' dominant-baseline='middle'>Wunderino</text></svg>"
-}
-def extract_clean_keys(casino):
-    """מחלץ מפתחות חיפוש נקיים משם המותג ומהקישורים שב-JSON"""
-    keys = []
-    brand = casino.get("brand_name", "").lower().replace(" ", "")
-    keys.append(brand)
+def load_processed_data():
+    countries_data = {}
+    data_dir = "processed-data"
     
-    for url_key in ["official_url", "affiliate_url"]:
-        url = casino.get(url_key, "")
-        if url and "http" in url:
+    if not os.path.exists(data_dir):
+        print(f"Error: Data directory '{data_dir}' not found.")
+        return countries_data
+
+    for filename in os.listdir(data_dir):
+        if filename.endswith(".json"):
+            # חילוץ קוד המדינה משם הקובץ והפיכה לאותיות גדולות
+            country_code = filename.split(".")[0].upper()
+            filepath = os.path.join(data_dir, filename)
             try:
-                domain = urlparse(url).netloc.lower()
-                keys.append(domain)
-            except:
-                pass
-    return keys
-
-def load_template():
-    if os.path.exists(TEMPLATE_PATH):
-        with open(TEMPLATE_PATH, "r", encoding="utf-8") as f:
-            return f.read()
-    return "<html><body><h1>{{COUNTRY_NAME}}</h1><div>{{CASINO_CARDS}}</div></body></html>"
-
-def build_casino_cards(json_path):
-    if not os.path.exists(json_path): return "<!-- No data -->"
-    with open(json_path, "r", encoding="utf-8") as f: casinos = json.load(f)
-    
-    all_clicks = [int(c.get("user_clicks", 10)) for c in casinos]
-    max_clicks = max(all_clicks) if all_clicks else 100
-    
-    featured_casinos = [c for c in casinos if c.get("is_featured") == True]
-    regular_casinos = [c for c in casinos if not c.get("is_featured") == True]
-    
-    for casino in regular_casinos:
-        clicks = int(casino.get("user_clicks", 50))
-        casino["calculated_score"] = round(7.5 + ((clicks / max_clicks) * 2.1), 1)
-        
-    regular_casinos.sort(key=lambda x: x.get("calculated_score", 8.5), reverse=True)
-    final_list = featured_casinos[:2] + regular_casinos[:(10 - len(featured_casinos[:2]))]
-    
-    cards_html = []
-    for casino in final_list:
-        is_featured = casino.get("is_featured") == True
-        features = casino.get("features", {})
-        
-        search_keys = extract_clean_keys(casino)
-        
-        logo_html = None
-        for key, svg_code in EMBEDDED_LOGOS.items():
-            if any(key in k for k in search_keys):
-                logo_html = svg_code
-                break
+                with open(filepath, "r", encoding="utf-8") as f:
+                    countries_data[country_code] = json.load(f)
+            except Exception as e:
+                print(f"Error reading {filename}: {e}")
                 
-        if not logo_html:
-            logo_html = f'<div style="font-family:\'Montserrat\',sans-serif; font-weight:800; color:#1a237e; font-size:1.2rem; text-transform:uppercase; text-align:center; width:100%; border:1px solid #ccc; padding:8px; border-radius:6px;">{casino["brand_name"]}</div>'
-            
-        card_class = "casino-card featured" if is_featured else "casino-card"
-        badge_html = '<span class="sponsored-tag">★ Sponsored TOP</span>' if is_featured else f'<span class="score-tag">Rating: {casino.get("calculated_score", 8.5)}/10</span>'
+    return countries_data
+
+def clean_html_template(html_content):
+    # הסרת הערות HTML
+    html_content = re.sub(r'<!--.*?-->', '', html_content, flags=re.DOTALL)
+    # הסרת שורות ריקות מיותרות
+    html_content = re.sub(r'^\s*$\n', '', html_content, flags=re.MULTILINE)
+    return html_content
+
+def generate_casino_cards(casinos, country_code):
+    cards_html = ""
+    for casino in casinos:
+        casino_id = casino.get("id", "")
         
-        card = f"""
-        <div class="{card_class}">
-            <div>
-                <div class="logo-container" style="display: flex; align-items: center; justify-content: center; height: 50px; width: 100%; max-width: 160px; margin: 0 auto 15px auto;">
-                    {logo_html}
-                </div>
-                <div class="card-header">
-                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-                        <span class="license-badge">License: #{casino['license_number']}</span>
-                        {badge_html}
-                    </div>
-                </div>
-                <div class="features-box">
-                    <div class="feature-item"><span>Welcome Bonus:</span> <strong>{features.get("bonus_text", "N/A")}</strong></div>
-                    <div class="feature-item"><span>Average RTP:</span> <strong>{features.get("average_rtp", "N/A")}</strong></div>
-                    <div class="feature-item"><span>Min Deposit:</span> <strong>{features.get("min_deposit", "N/A")}</strong></div>
-                    <div class="feature-item"><span>Payments:</span> <strong style="font-size:0.8rem; max-width:60%; color:#455a64;">{features.get("payment_methods", "N/A")}</strong></div>
-                    <div class="feature-item"><span>Crypto Support:</span> <strong class="crypto-no">❌ No (Fiat)</strong></div>
-                </div>
+        # -------------------------------------------------------------
+        # התיקון המדויק: התעלמות מלאה מאותיות גדולות/קטנות בחיפוש הקובץ
+        # -------------------------------------------------------------
+        logo_file = f"data-collectors/united-kingdom/logos/{casino_id}.png"  # ברירת המחדל שלך
+        logos_dir = "assets/logos"
+        if os.path.exists(logos_dir):
+            target_filename = f"{str(casino_id).lower()}.png"
+            for file_name in os.listdir(logos_dir):
+                if file_name.lower() == target_filename:
+                    logo_file = f"assets/logos/{file_name}"
+                    break
+        # -------------------------------------------------------------
+
+        name = casino.get("name", casino_id.upper())
+        rating = casino.get("rating", "N/A")
+        bonus = casino.get("bonus", "No Welcome Bonus Available")
+        license_val = casino.get("license", "N/A")
+        rtp = casino.get("rtp", "N/A")
+        min_deposit = casino.get("min_deposit", "N/A")
+        
+        payments_list = casino.get("payments", [])
+        payments_str = ", ".join(payments_list) if payments_list else "N/A"
+        
+        crypto_val = casino.get("crypto", "No")
+        crypto_str = "Yes (Crypto)" if crypto_val == "Yes" else "X No (Fiat)"
+        crypto_color = "#2f855a" if crypto_val == "Yes" else "#e53e3e"
+# ==========================================
+# PART 2: ORIGINAL MULTI-COUNTRY LOOP
+# ==========================================
+        cards_html += f"""
+        <div class="casino-card" style="border: 2px solid #eef2f5; padding: 25px; margin: 15px; border-radius: 12px; display: inline-block; background: #fff; text-align: left; width: 280px; box-shadow: 0 8px 16px rgba(0,0,0,0.04); vertical-align: top;">
+            <div style="text-align: center; height: 70px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+                <img src="{logo_file}" alt="{name} logo" style="max-width: 180px; max-height: 60px; object-fit: contain;">
             </div>
-            <a href="{casino.get("affiliate_url") or casino.get("official_url", "#")}" class="btn-play" rel="nofollow" target="_blank">Verify & Play</a>
+            <div style="border-top: 1px solid #f1f4f6; padding-top: 10px; font-family: sans-serif; font-size: 13px; color: #4a5568;">
+                <p><strong>License:</strong> {license_val}</p>
+                <p><strong>Rating:</strong> <span style="color: #2b6cb0; font-weight: bold;">{rating}/10</span></p>
+                <p><strong>Welcome Bonus:</strong> <span style="color: #2f855a; font-weight: bold;">{bonus}</span></p>
+                <p><strong>Average RTP:</strong> {rtp}</p>
+                <p><strong>Min Deposit:</strong> {min_deposit}</p>
+                <p><strong>Payments:</strong> <span style="font-size: 11px;">{payments_str}</span></p>
+                <p><strong>Crypto Support:</strong> <span style="color: {crypto_color}; font-weight: bold;">{crypto_str}</span></p>
+            </div>
+            <div style="margin-top: 20px; text-align: center;">
+                <a href="#" style="background: #00e676; color: #fff; padding: 12px 30px; border-radius: 6px; text-decoration: none; font-weight: bold; display: block; font-family: sans-serif; box-shadow: 0 4px 10px rgba(0,230,118,0.3);">Verify & Play</a>
+            </div>
         </div>
         """
-        cards_html.append(card)
-    return "\n".join(cards_html)
+    return cards_html
 
-def main():
-    if not os.path.exists(OUTPUT_DIR): os.makedirs(OUTPUT_DIR)
-    template = load_template()
+def build():
+    countries_data = load_processed_data()
     
-    for code, config in COUNTRIES_CONFIG.items():
-        cards_html = build_casino_cards(config["data_file"])
-        
-        page_content = template.replace("{{COUNTRY_NAME}}", config["country_name"]).replace("{{CASINO_CARDS}}", cards_html)
-        page_content = page_content.replace("{{PAGE_TITLE}}", "SlotMetric Database").replace("{{LANG_CODE}}", "en").replace("{{COUNTRY_CODE}}", code)
-        
-        output_file_path = os.path.join(OUTPUT_DIR, "index.html") if code == "uk" else os.path.join(OUTPUT_DIR, code, "index.html")
-        if (code != "uk") and not os.path.exists(os.path.dirname(output_file_path)): os.makedirs(os.path.dirname(output_file_path))
-        
-        with open(output_file_path, "w", encoding="utf-8") as f: f.write(page_content)
-    print("✅ Success: Built perfectly with bulletproof inline SVGs.")
+    template_path = "templates/index.html"
+    if not os.path.exists(template_path):
+        print(f"Error: Template file '{template_path}' not found.")
+        return
 
-if __name__ == "__main__": main()
+    with open(template_path, "r", encoding="utf-8") as f:
+        template_content = f.read()
 
+    os.makedirs("public", exist_ok=True)
+
+    for country_code, casinos in countries_data.items():
+        country_name = country_code.replace("-", " ").title()
+        
+        cards_html = generate_casino_cards(casinos, country_code)
+        
+        page_content = template_content.replace("{{COUNTRY_NAME}}", country_name)
+        page_content = page_content.replace("{{CASINO_CARDS}}", cards_html)
+        page_content = clean_html_template(page_content)
+        
+        if country_code == "UNITED-KINGDOM":
+            output_path = "public/index.html"
+        else:
+            country_dir = os.path.join("public", country_code.lower())
+            os.makedirs(country_dir, exist_ok=True)
+            output_path = os.path.join(country_dir, "index.html")
+            
+        with open(output_path, "w", encoding="utf-8") as f:
+            f.write(page_content)
+            
+        print(f"Successfully generated page for {country_name} -> {output_path}")
+
+if __name__ == "__main__":
+    build()
