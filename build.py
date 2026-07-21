@@ -2,12 +2,11 @@ import os
 import json
 import urllib.request
 import shutil
+from urllib.parse import urlparse
 
 TEMPLATE_PATH = "templates/index.html"
 OUTPUT_DIR = "public"
-# תיקיית המקור הראשית בריפו (זו שצילמת)
 REPO_LOGOS_DIR = os.path.join("assets", "logos")
-# תיקיית היעד הסופית בתוך ה-public שהאתר מציג לגולשים
 PUBLIC_LOGOS_DIR = os.path.join(OUTPUT_DIR, "assets", "logos")
 
 COUNTRIES_CONFIG = {
@@ -18,11 +17,27 @@ COUNTRIES_CONFIG = {
     "es": {"country_name": "Spain (España)", "data_file": "processed-data/spain-casinos.json"}
 }
 
-# מקור יציב להורדת הלוגואים
-BASE_DOWNLOAD_URL = "https://logo.dev{}.com?token=pk_MXVwY_U6T2mZ9h7v_X_g_A"
+BASE_DOWNLOAD_URL = "https://logo.dev{}?token=pk_MXVwY_U6T2mZ9h7v_X_g_A"
 
-def download_logo_if_needed(brand_key):
-    """מוריד את הלוגו לתיקיית הריפו הקבועה ומעתיק אותו לתיקיית האתר הציבורית"""
+def extract_domain(casino):
+    """מחלץ את שם הדומיין המדויק מתוך הקישורים שבתוך ה-JSON"""
+    for key in ["official_url", "affiliate_url"]:
+        url = casino.get(key, "")
+        if url and "http" in url:
+            try:
+                parsed_url = urlparse(url)
+                domain = parsed_url.netloc.replace("www.", "")
+                if domain:
+                    return domain
+            except:
+                pass
+                
+    # גיבוי אם אין קישור תקין - נשתמש בשם המותג
+    brand = casino.get("brand_name", "").lower().replace(" ", "").replace("casino", "")
+    return f"{brand}.com"
+
+def download_logo_if_needed(brand_key, domain_name):
+    """מוריד את הלוגו לפי הדומיין האמיתי לתיקיית הריפו ומעתיק ל-public"""
     os.makedirs(REPO_LOGOS_DIR, exist_ok=True)
     os.makedirs(PUBLIC_LOGOS_DIR, exist_ok=True)
     
@@ -30,20 +45,18 @@ def download_logo_if_needed(brand_key):
     repo_path = os.path.join(REPO_LOGOS_DIR, filename)
     public_path = os.path.join(PUBLIC_LOGOS_DIR, filename)
     
-    # אם הלוגו לא קיים פיזית בתיקייה שצילמת, נוריד אותו עכשיו
     if not os.path.exists(repo_path):
-        print(f"📥 Logo missing from assets/logos/. Downloading: {brand_key}...")
-        url = BASE_DOWNLOAD_URL.format(brand_key)
+        print(f"📥 Downloading logo for {brand_key} using domain: {domain_name}...")
+        url = BASE_DOWNLOAD_URL.format(domain_name)
         try:
             req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'})
             with urllib.request.urlopen(req, timeout=10) as response, open(repo_path, 'wb') as out_file:
                 out_file.write(response.read())
             print(f"✅ Saved to assets/logos/: {filename}")
         except Exception as e:
-            print(f"❌ Download failed for {brand_key}: {e}")
+            print(f"❌ Download failed for {brand_key} ({domain_name}): {e}")
             return None
             
-    # העתקה חובה לתיקיית public הציבורית כדי שהאתר יציג אותו בריצה הזו
     if os.path.exists(repo_path):
         shutil.copy(repo_path, public_path)
         return filename
@@ -77,12 +90,15 @@ def build_casino_cards(json_path, is_subfolder):
         is_featured = casino.get("is_featured") == True
         features = casino.get("features", {})
         
-        # חילוץ שם קצר ונקי (למשל 'bet365')
+        # יצירת מפתח שם נקי לקובץ התמונה (למשל 'bet365' או 'allbritish')
         brand_key = casino.get("brand_name", "").lower().replace(" ", "").replace("casino", "")
-        logo_filename = download_logo_if_needed(brand_key)
+        
+        # חילוץ הדומיין האמיתי לצורך ההורדה (למשל 'allbritishcasino.com')
+        domain_name = extract_domain(casino)
+        
+        logo_filename = download_logo_if_needed(brand_key, domain_name)
         
         if logo_filename:
-            # תיקון נתיב יחסי עבור תתי-תיקיות של מדינות (כמו /de/)
             path_prefix = "../" if is_subfolder else ""
             final_src = f"{path_prefix}assets/logos/{logo_filename}"
             logo_html = f'<img src="{final_src}" alt="{casino["brand_name"]}" style="max-height: 45px; max-width: 140px; object-fit: contain; display: block; margin: 0 auto;">'
@@ -133,6 +149,6 @@ def main():
         if is_subfolder and not os.path.exists(os.path.dirname(output_file_path)): os.makedirs(os.path.dirname(output_file_path))
         
         with open(output_file_path, "w", encoding="utf-8") as f: f.write(page_content)
-    print("✅ Success: Built and saved logos locally to assets/logos/.")
+    print("✅ Success: Built and saved logos locally using smart domain extraction.")
 
 if __name__ == "__main__": main()
