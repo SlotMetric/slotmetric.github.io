@@ -12,28 +12,13 @@ COUNTRIES_CONFIG = {
     "es": {"country_name": "Spain (España)", "data_file": "processed-data/spain-casinos.json"}
 }
 
-# קישורי תמונות גלובליים ופתוחים שכל דפדפן מאשר להציג באופן מיידי
-ONLINE_LOGOS = {
-    "bet365": "https://wikimedia.org",
-    "888casino": "https://wikimedia.org",
-    "mrgreen": "https://wikimedia.org",
-    "leovegas": "https://wikimedia.org",
-    # עבור מותגים ללא לוגו פתוח בוויקיפדיה, נשתמש בטקסט מסוגנן ומעוצב ישירות בקוד כדי שלא תהיה תמונה שבורה!
-    "duelz": "TEXT_BASED",
-    "allbritish": "TEXT_BASED",
-    "playojo": "TEXT_BASED",
-    "rizk": "TEXT_BASED",
-    "casimba": "TEXT_BASED",
-    "grosvenor": "TEXT_BASED"
-}
-
 def load_template():
     if os.path.exists(TEMPLATE_PATH):
         with open(TEMPLATE_PATH, "r", encoding="utf-8") as f:
             return f.read()
     return "<html><body><h1>{{COUNTRY_NAME}}</h1><div>{{CASINO_CARDS}}</div></body></html>"
 
-def build_casino_cards(json_path):
+def build_casino_cards(json_path, is_subfolder):
     if not os.path.exists(json_path): return "<!-- No data -->"
     with open(json_path, "r", encoding="utf-8") as f: casinos = json.load(f)
     
@@ -55,21 +40,18 @@ def build_casino_cards(json_path):
         is_featured = casino.get("is_featured") == True
         features = casino.get("features", {})
         
-        brand_lower = casino.get("brand_name", "").lower().replace(" ", "")
-        url_lower = casino.get("logo_url", "").lower()
+        # שלב התיקון הקריטי: לוקחים את הנתיב מה-JSON ומנקים לוכסן שמאלי אם קיים
+        raw_logo_url = casino.get("logo_url", "")
+        clean_logo_path = raw_logo_url.lstrip("/")
         
-        logo_src = "TEXT_BASED"
-        for key, url in ONLINE_LOGOS.items():
-            if (key in brand_lower) or (key in url_lower):
-                logo_src = url
-                break
-                
-        # אם יש קישור תמונה תקין מוויקיפדיה, נציג אותו. אחרת, נציג לוגו טקסטואלי מרהיב ונקי
-        if logo_src and logo_src != "TEXT_BASED":
-            logo_html = f'<img src="{logo_src}" alt="{casino["brand_name"]}" style="max-height: 45px; max-width: 140px; object-fit: contain; display: block; margin: 0 auto;">'
-        else:
-            # לוגו טקסט סופר-מעוצב ומקצועי למניעת תמונות שבורות
-            logo_html = f'<div style="font-family: \'Montserrat\', sans-serif; font-weight: 800; color: #1a237e; font-size: 1.4rem; letter-spacing: -0.5px; text-transform: uppercase; padding: 5px 0; text-align: center; width: 100%;">{casino["brand_name"]}</div>'
+        # בניית הנתיב היחסי המדויק לפי המיקום (עבור תת-תיקייה כמו /de/ מוסיפים ../ לחזרה לשורש האתר)
+        path_prefix = "../" if is_subfolder else ""
+        final_image_src = f"{path_prefix}{clean_logo_path}"
+        
+        # יצירת תגית התמונה המקורית של הציור
+        logo_html = f'<img src="{final_image_src}" alt="{casino["brand_name"]}" style="max-height: 45px; max-width: 140px; object-fit: contain; display: block; margin: 0 auto;" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'block\';">'
+        # גיבוי טקסטואלי נסתר במידת הצורך למקרה וקובץ ספציפי חסר בשרת
+        logo_html += f'<div style="display:none; font-family:\'Montserrat\',sans-serif; font-weight:800; color:#1a237e; font-size:1.1rem; text-transform:uppercase; text-align:center;">{casino["brand_name"]}</div>'
             
         card_class = "casino-card featured" if is_featured else "casino-card"
         badge_html = '<span class="sponsored-tag">★ Sponsored TOP</span>' if is_featured else f'<span class="score-tag">Rating: {casino.get("calculated_score", 8.5)}/10</span>'
@@ -105,15 +87,16 @@ def main():
     template = load_template()
     
     for code, config in COUNTRIES_CONFIG.items():
-        cards_html = build_casino_cards(config["data_file"])
+        is_subfolder = (code != "uk")
+        cards_html = build_casino_cards(config["data_file"], is_subfolder)
         
         page_content = template.replace("{{COUNTRY_NAME}}", config["country_name"]).replace("{{CASINO_CARDS}}", cards_html)
         page_content = page_content.replace("{{PAGE_TITLE}}", "SlotMetric Database").replace("{{LANG_CODE}}", "en").replace("{{COUNTRY_CODE}}", code)
         
         output_file_path = os.path.join(OUTPUT_DIR, "index.html") if code == "uk" else os.path.join(OUTPUT_DIR, code, "index.html")
-        if (code != "uk") and not os.path.exists(os.path.dirname(output_file_path)): os.makedirs(os.path.dirname(output_file_path))
+        if is_subfolder and not os.path.exists(os.path.dirname(output_file_path)): os.makedirs(os.path.dirname(output_file_path))
         
         with open(output_file_path, "w", encoding="utf-8") as f: f.write(page_content)
-    print("✅ Success: Built successfully with verified public image URLs.")
+    print("✅ Success: Built successfully with real database images.")
 
 if __name__ == "__main__": main()
