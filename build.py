@@ -82,16 +82,20 @@ def build_casino_cards(json_path):
                 logo_html = svg_code
                 break
                 
-        if not logo_html:
-            # בדיקה חכמה ולא רגישה לאותיות גדולות/קטנות בתיקיית assets/logos
+            if not logo_html:
+            # בדיקה חכמה ללא רגישות לאותיות גדולות/קטנות
             file_found = False
             if os.path.exists("assets/logos") and search_keys:
-                primary_key = search_keys[0].lower() # המפתח הנקי באותיות קטנות (למשל: 'leovegas')
+                # שימוש ב-next(iter()) כדי לשלוף את המפתח הראשון בבטחה בלי להשתמש בסוגריים מרובעים
+                primary_key = next(iter(search_keys), "").lower()
+                
                 for file_name in os.listdir("assets/logos"):
-                    if file_name.lower() == f"{primary_key}.png" or file_name.lower().startswith(primary_key):
+                    current_file_lower = file_name.lower()
+                    if current_file_lower == f"{primary_key}.png" or current_file_lower.startswith(primary_key):
                         logo_html = f'<img src="assets/logos/{file_name}" alt="{casino.get("brand_name", "")} logo" style="max-width: 160px; max-height: 50px; object-fit: contain; display: block; margin: 0 auto;">'
                         file_found = True
                         break
+
             
             # ברירת מחדל: אם לא נמצא קובץ תמונה בכלל, מייצר את כרטיסיית הטקסט המקורית שלכם
             if not file_found:
