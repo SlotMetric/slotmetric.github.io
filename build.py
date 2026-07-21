@@ -81,20 +81,22 @@ def build_casino_cards(json_path):
             if any(key in k for k in search_keys):
                 logo_html = svg_code
                 break
-                
+
         if not logo_html:
             file_found = False
             if os.path.exists("assets/logos") and search_keys:
-                primary_key = next(iter(search_keys), "").lower()
+                # לוקח את הדומיין, הופך לאותיות קטנות, ומנקה סיומות כמו .com או .co.uk
+                raw_key = next(iter(search_keys), "").lower()
+                primary_key = raw_key.split(".")[0]
+                
                 for file_name in os.listdir("assets/logos"):
                     current_file_lower = file_name.lower()
-                    if current_file_lower == f"{primary_key}.png" or current_file_lower.startswith(primary_key):
+                    # בודק התאמה מלאה או האם השם בתיקייה מתחיל בשם המותג (למשל 888.png יתאים ל-888casino)
+                    if current_file_lower == f"{primary_key}.png" or current_file_lower.startswith(primary_key) or primary_key.startswith(current_file_lower.replace(".png", "")):
                         logo_html = f'<img src="assets/logos/{file_name}" alt="{casino.get("brand_name", "")} logo" style="max-width: 160px; max-height: 50px; object-fit: contain; display: block; margin: 0 auto;">'
                         file_found = True
                         break
-
             
-            # ברירת מחדל: אם לא נמצא קובץ תמונה בכלל, מייצר את כרטיסיית הטקסט המקורית שלכם
             if not file_found:
                 logo_html = f'<div style="font-family:\'Montserrat\',sans-serif; font-weight:800; color:#212529; font-size:1.2rem; text-transform:uppercase; text-align:center; width:100%; border:1px solid #ccc; padding:8px; border-radius:8px;">{casino.get("brand_name", "")}</div>'
             
