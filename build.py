@@ -12,7 +12,7 @@ def load_processed_data():
 
     for filename in os.listdir(data_dir):
         if filename.endswith(".json"):
-            # חילוץ קוד המדינה משם הקובץ
+            # תיקון קריטי: לוקח את האיבר הראשון מהפיצול והופך לאותיות גדולות
             country_code = filename.split(".")[0].upper()
             filepath = os.path.join(data_dir, filename)
             try:
@@ -35,10 +35,8 @@ def generate_casino_cards(casinos, country_code):
     for casino in casinos:
         casino_id = casino.get("id", "")
         
-        # -------------------------------------------------------------
-        # התיקון היחיד: בדיקה חכמה ולא רגישה לאותיות גדולות/קטנות בתיקיית assets/logos
-        # -------------------------------------------------------------
-        logo_file = f"data-collectors/united-kingdom/logos/{casino_id}.png"  # ברירת המחדל המקורית שלך
+        # בדיקה לא רגישה לאותיות גדולות/קטנות בתיקיית assets/logos
+        logo_file = f"data-collectors/united-kingdom/logos/{casino_id}.png"
         logos_dir = "assets/logos"
         if os.path.exists(logos_dir):
             target_filename = f"{str(casino_id).lower()}.png"
@@ -46,7 +44,6 @@ def generate_casino_cards(casinos, country_code):
                 if file_name.lower() == target_filename:
                     logo_file = f"assets/logos/{file_name}"
                     break
-        # -------------------------------------------------------------
 
         name = casino.get("name", casino_id.upper())
         rating = casino.get("rating", "N/A")
@@ -62,7 +59,7 @@ def generate_casino_cards(casinos, country_code):
         crypto_str = "Yes (Crypto)" if crypto_val == "Yes" else "X No (Fiat)"
         crypto_color = "#2f855a" if crypto_val == "Yes" else "#e53e3e"
 # ==========================================
-# PART 2: ORIGINAL CARD FORMATTING & MULTI-COUNTRY LOOP (FROM GOOGLE DOCS)
+# PART 2: ORIGINAL CARD FORMATTING & MULTI-COUNTRY LOOP
 # ==========================================
         cards_html += f"""
         <div class="casino-card" style="border: 2px solid #eef2f5; padding: 25px; margin: 15px; border-radius: 12px; display: inline-block; background: #fff; text-align: left; width: 280px; box-shadow: 0 8px 16px rgba(0,0,0,0.04); vertical-align: top;">
