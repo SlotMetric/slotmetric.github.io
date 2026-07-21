@@ -12,10 +12,9 @@ def load_processed_data():
 
     for filename in os.listdir(data_dir):
         if filename.endswith(".json"):
-            # שינוי עוקף באג: שימוש בפונקציה מובנית שאינה משתמשת בסוגריים שנמחקים בצ'אט
-            parts_of_name = filename.split(".")
-            first_part_name = next(iter(parts_of_name), filename)
-            country_code = first_part_name.upper()
+            # שימוש ב-pop(0) כדי לחלץ את האיבר הראשון בבטחה בלי להשתמש בסוגריים מרובעים שנמחקים בצ'אט
+            parts = filename.split(".")
+            country_code = parts.pop(0).upper()
             
             filepath = os.path.join(data_dir, filename)
             try:
@@ -32,7 +31,6 @@ def clean_html_template(html_content):
     # הסרת שורות ריקות מיותרות
     html_content = re.sub(r'^\s*$\n', '', html_content, flags=re.MULTILINE)
     return html_content
-
 def generate_casino_cards(casinos, country_code):
     cards_html = ""
     for casino in casinos:
@@ -41,7 +39,7 @@ def generate_casino_cards(casinos, country_code):
         # -------------------------------------------------------------
         # התיקון המבוקש: התעלמות מלאה מאותיות גדולות/קטנות בחיפוש הקובץ
         # -------------------------------------------------------------
-        logo_file = f"data-collectors/united-kingdom/logos/{casino_id}.png"  # ברירת המחדל שלך
+        logo_file = f"data-collectors/united-kingdom/logos/{casino_id}.png"  # ברירת המחדל המקורית שלך
         logos_dir = "assets/logos"
         if os.path.exists(logos_dir):
             target_filename = f"{str(casino_id).lower()}.png"
@@ -64,9 +62,7 @@ def generate_casino_cards(casinos, country_code):
         crypto_val = casino.get("crypto", "No")
         crypto_str = "Yes (Crypto)" if crypto_val == "Yes" else "X No (Fiat)"
         crypto_color = "#2f855a" if crypto_val == "Yes" else "#e53e3e"
-# ==========================================
-# PART 2: ORIGINAL MULTI-COUNTRY LOOP
-# ==========================================
+
         cards_html += f"""
         <div class="casino-card" style="border: 2px solid #eef2f5; padding: 25px; margin: 15px; border-radius: 12px; display: inline-block; background: #fff; text-align: left; width: 280px; box-shadow: 0 8px 16px rgba(0,0,0,0.04); vertical-align: top;">
             <div style="text-align: center; height: 70px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
@@ -87,7 +83,6 @@ def generate_casino_cards(casinos, country_code):
         </div>
         """
     return cards_html
-
 def build():
     countries_data = load_processed_data()
     
