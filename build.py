@@ -12,7 +12,7 @@ COUNTRIES_CONFIG = {
     "es": {"country_name": "Spain (España)", "data_file": "processed-data/spain-casinos.json"}
 }
 
-# הלוגואים הגרפיים מוזרקים ישירות כקוד HTML/SVG - אין צורך בקבצים בתיקייה!
+# קוד ה-SVG של הלוגואים
 EMBEDDED_LOGOS = {
     "duelz": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#1a237e' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='20' fill='#ff9100' text-anchor='middle' dominant-baseline='middle'>DUELZ</text></svg>",
     "bet365": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#005A36' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='22' fill='#FFDF00' text-anchor='middle' dominant-baseline='middle'>bet365</text></svg>",
@@ -54,14 +54,19 @@ def build_casino_cards(json_path):
         is_featured = casino.get("is_featured") == True
         features = casino.get("features", {})
         
-        # מחלצים את המפתח של הלוגו מתוך כתובת ה-URL שב-JSON
-        logo_key = casino.get("logo_url", "").split("/")[-1].replace(".png", "").lower()
+        # זיהוי גמיש וחסין טעויות: בודקים התאמה לפי שם המותג או הלינק שמופיעים ב-JSON
+        brand_lower = casino.get("brand_name", "").lower().replace(" ", "")
+        url_lower = casino.get("logo_url", "").lower()
         
-        # הזרקת קוד ה-SVG ישירות ל-HTML בצורה מאובטחת
-        if logo_key in EMBEDDED_LOGOS:
-            logo_html = EMBEDDED_LOGOS[logo_key]
-        else:
-            logo_html = f'<div style="font-weight:bold; color:#1a237e; font-size:1.1rem; padding: 10px; border: 1px solid #ccc; border-radius: 6px; text-align: center;">{casino["brand_name"]}</div>'
+        logo_html = None
+        for key, svg_code in EMBEDDED_LOGOS.items():
+            if (key in brand_lower) or (key in url_lower):
+                logo_html = svg_code
+                break
+                
+        # גיבוי: אם עדיין לא מצאנו התאמה, נציג תיבת טקסט מעוצבת יפה עם שם המותג
+        if not logo_html:
+            logo_html = f'<div style="font-weight:bold; color:#1a237e; font-size:1.1rem; padding: 10px; border: 1px solid #e0e0e0; border-radius: 6px; text-align: center; background: #f5f5f5; width: 100%;">{casino["brand_name"]}</div>'
             
         card_class = "casino-card featured" if is_featured else "casino-card"
         badge_html = '<span class="sponsored-tag">★ Sponsored TOP</span>' if is_featured else f'<span class="score-tag">Rating: {casino.get("calculated_score", 8.5)}/10</span>'
@@ -69,7 +74,7 @@ def build_casino_cards(json_path):
         card = f"""
         <div class="{card_class}">
             <div>
-                <div class="logo-container" style="display: flex; align-items: center; justify-content: center; height: 50px; max-width: 160px; margin: 0 auto 15px auto;">
+                <div class="logo-container" style="display: flex; align-items: center; justify-content: center; height: 50px; width: 160px; margin: 0 auto 15px auto;">
                     {logo_html}
                 </div>
                 <div class="card-header">
@@ -106,6 +111,6 @@ def main():
         if (code != "uk") and not os.path.exists(os.path.dirname(output_file_path)): os.makedirs(os.path.dirname(output_file_path))
         
         with open(output_file_path, "w", encoding="utf-8") as f: f.write(page_content)
-    print("✅ Success: Inline SVGs generated perfectly.")
+    print("✅ Success: Built with Robust Flexible Matching.")
 
 if __name__ == "__main__": main()
