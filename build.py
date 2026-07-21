@@ -12,7 +12,7 @@ def load_processed_data():
 
     for filename in os.listdir(data_dir):
         if filename.endswith(".json"):
-            # תיקון השורה שקרסה: לוקח את שם המדינה והופך אותו לאותיות גדולות
+            # נשמר במדויק כמו במקור שלך: חילוץ האינדקס האפס והפיכה לאותיות גדולות
             country_code = filename.split(".")[0].upper()
             filepath = os.path.join(data_dir, filename)
             try:
@@ -24,9 +24,7 @@ def load_processed_data():
     return countries_data
 
 def clean_html_template(html_content):
-    # הסרת הערות HTML
     html_content = re.sub(r'<!--.*?-->', '', html_content, flags=re.DOTALL)
-    # הסרת שורות ריקות מיותרות
     html_content = re.sub(r'^\s*$\n', '', html_content, flags=re.MULTILINE)
     return html_content
 
@@ -36,9 +34,9 @@ def generate_casino_cards(casinos, country_code):
         casino_id = casino.get("id", "")
         
         # -------------------------------------------------------------
-        # התיקון המבוקש: התעלמות מלאה מאותיות גדולות/קטנות בחיפוש הקובץ
+        # התיקון המבוקש: סריקה והתעלמות מלאה מאותיות גדולות/קטנות
         # -------------------------------------------------------------
-        logo_file = f"data-collectors/united-kingdom/logos/{casino_id}.png"  # ברירת המחדל שלך
+        logo_file = f"data-collectors/united-kingdom/logos/{casino_id}.png"
         logos_dir = "assets/logos"
         if os.path.exists(logos_dir):
             target_filename = f"{str(casino_id).lower()}.png"
@@ -86,7 +84,6 @@ def generate_casino_cards(casinos, country_code):
     return cards_html
 
 def build():
-    # טעינת הנתונים
     countries_data = load_processed_data()
     
     template_path = "templates/index.html"
