@@ -77,7 +77,16 @@ def build_casino_cards(json_path):
         search_keys = extract_clean_keys(casino)
         
         logo_html = None
-            
+        
+        for key, svg_code in EMBEDDED_LOGOS.items():
+            if any(key in k for k in search_keys):
+                logo_html = svg_code
+                break
+
+        if not logo_html:
+            # החזרת העיצוב המקורי שלכם שמייצר את תיבות הטקסט עם הרקעים הצבעוניים לכל מותג
+            logo_html = f'<div style="font-family:\'Montserrat\',sans-serif; font-weight:800; color:#fff; font-size:1.2rem; text-transform:uppercase; text-align:center; width:100%; padding:12px; border-radius:8px; background:{casino.get("color", "#212529")};">{casino.get("brand_name", "")}</div>'
+
         card_class = "casino-card featured" if is_featured else "casino-card"
         badge_html = '<span class="sponsored-tag">★ Sponsored TOP</span>' if is_featured else f'<span class="score-tag">Rating: {casino.get("calculated_score", 8.5)}/10</span>'
         
