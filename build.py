@@ -83,7 +83,19 @@ def build_casino_cards(json_path):
                 break
                 
         if not logo_html:
-            logo_html = f'<div style="font-family:\'Montserrat\',sans-serif; font-weight:800; color:#1a237e; font-size:1.2rem; text-transform:uppercase; text-align:center; width:100%; border:1px solid #ccc; padding:8px; border-radius:6px;">{casino["brand_name"]}</div>'
+            # בדיקה חכמה ולא רגישה לאותיות גדולות/קטנות בתיקיית assets/logos
+            file_found = False
+            if os.path.exists("assets/logos") and search_keys:
+                primary_key = search_keys[0].lower() # המפתח הנקי באותיות קטנות (למשל: 'leovegas')
+                for file_name in os.listdir("assets/logos"):
+                    if file_name.lower() == f"{primary_key}.png" or file_name.lower().startswith(primary_key):
+                        logo_html = f'<img src="assets/logos/{file_name}" alt="{casino.get("brand_name", "")} logo" style="max-width: 160px; max-height: 50px; object-fit: contain; display: block; margin: 0 auto;">'
+                        file_found = True
+                        break
+            
+            # ברירת מחדל: אם לא נמצא קובץ תמונה בכלל, מייצר את כרטיסיית הטקסט המקורית שלכם
+            if not file_found:
+                logo_html = f'<div style="font-family:\'Montserrat\',sans-serif; font-weight:800; color:#212529; font-size:1.2rem; text-transform:uppercase; text-align:center; width:100%; border:1px solid #ccc; padding:8px; border-radius:8px;">{casino.get("brand_name", "")}</div>'
             
         card_class = "casino-card featured" if is_featured else "casino-card"
         badge_html = '<span class="sponsored-tag">★ Sponsored TOP</span>' if is_featured else f'<span class="score-tag">Rating: {casino.get("calculated_score", 8.5)}/10</span>'
