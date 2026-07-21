@@ -2,13 +2,13 @@ name: Update Data and Build Site
 
 on:
   schedule:
-    - cron: '0 0 * * *' # רץ אוטומטית כל יום בחצות
-  workflow_dispatch: # מאפשר לך להפעיל ידנית מתי שבא לך
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 permissions:
-  contents: write  # מאפשר לשמור את התמונות שהורדו בחזרה לתוך התיקייה בריפו
-  id-token: write  # ◄◄◄ השורה שהייתה חסרה! מאפשרת לגיטהב לבצע את ה-Deploy ל-Pages
-  pages: write     # נותן הרשאה מלאה לעדכון דפי האתר
+  contents: write
+  id-token: write
+  pages: write
 
 jobs:
   update-and-build:
@@ -18,7 +18,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # מוריד את כל ההיסטוריה כדי למנוע שגיאות גיט בהעלאה
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -38,13 +38,13 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@://github.com"
           
-          mkdir -p assets/logos/
+          # הכרחי: מוסיף את התיקייה הראשית למעקב הגיט
           git add assets/logos/
           
           if ! git diff-index --quiet HEAD; then
             git commit -m "chore: auto-download missing casino logos [skip ci]"
             git push origin main || git push origin master
-            echo "✅ New logos pushed back to repository!"
+            echo "✅ New logos saved into the repository permanently!"
           else
             echo "✨ No new logos were downloaded."
           fi
