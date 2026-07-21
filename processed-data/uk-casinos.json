@@ -1,127 +1,222 @@
-import os
-import json
-import re
-
-def load_processed_data():
-    countries_data = {}
-    data_dir = "processed-data"
-    
-    if not os.path.exists(data_dir):
-        print(f"Error: Data directory '{data_dir}' not found.")
-        return countries_data
-
-    for filename in os.listdir(data_dir):
-        if filename.endswith(".json"):
-            # תיקון קריטי: לוקח את האיבר הראשון מהפיצול והופך לאותיות גדולות
-            country_code = filename.split(".")[0].upper()
-            filepath = os.path.join(data_dir, filename)
-            try:
-                with open(filepath, "r", encoding="utf-8") as f:
-                    countries_data[country_code] = json.load(f)
-            except Exception as e:
-                print(f"Error reading {filename}: {e}")
-                
-    return countries_data
-
-def clean_html_template(html_content):
-    # הסרת הערות HTML
-    html_content = re.sub(r'<!--.*?-->', '', html_content, flags=re.DOTALL)
-    # הסרת שורות ריקות מיותרות
-    html_content = re.sub(r'^\s*$\n', '', html_content, flags=re.MULTILINE)
-    return html_content
-
-def generate_casino_cards(casinos, country_code):
-    cards_html = ""
-    for casino in casinos:
-        casino_id = casino.get("id", "")
-        
-        # בדיקה לא רגישה לאותיות גדולות/קטנות בתיקיית assets/logos
-        logo_file = f"data-collectors/united-kingdom/logos/{casino_id}.png"
-        logos_dir = "assets/logos"
-        if os.path.exists(logos_dir):
-            target_filename = f"{str(casino_id).lower()}.png"
-            for file_name in os.listdir(logos_dir):
-                if file_name.lower() == target_filename:
-                    logo_file = f"assets/logos/{file_name}"
-                    break
-
-        name = casino.get("name", casino_id.upper())
-        rating = casino.get("rating", "N/A")
-        bonus = casino.get("bonus", "No Welcome Bonus Available")
-        license_val = casino.get("license", "N/A")
-        rtp = casino.get("rtp", "N/A")
-        min_deposit = casino.get("min_deposit", "N/A")
-        
-        payments_list = casino.get("payments", [])
-        payments_str = ", ".join(payments_list) if payments_list else "N/A"
-        
-        crypto_val = casino.get("crypto", "No")
-        crypto_str = "Yes (Crypto)" if crypto_val == "Yes" else "X No (Fiat)"
-        crypto_color = "#2f855a" if crypto_val == "Yes" else "#e53e3e"
-# ==========================================
-# PART 2: ORIGINAL CARD FORMATTING & MULTI-COUNTRY LOOP
-# ==========================================
-        cards_html += f"""
-        <div class="casino-card" style="border: 2px solid #eef2f5; padding: 25px; margin: 15px; border-radius: 12px; display: inline-block; background: #fff; text-align: left; width: 280px; box-shadow: 0 8px 16px rgba(0,0,0,0.04); vertical-align: top;">
-            <div style="text-align: center; height: 70px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
-                <img src="{logo_file}" alt="{name} logo" style="max-width: 180px; max-height: 60px; object-fit: contain;">
-            </div>
-            <div style="border-top: 1px solid #f1f4f6; padding-top: 10px; font-family: sans-serif; font-size: 13px; color: #4a5568;">
-                <p><strong>License:</strong> {license_val}</p>
-                <p><strong>Rating:</strong> <span style="color: #2b6cb0; font-weight: bold;">{rating}/10</span></p>
-                <p><strong>Welcome Bonus:</strong> <span style="color: #2f855a; font-weight: bold;">{bonus}</span></p>
-                <p><strong>Average RTP:</strong> {rtp}</p>
-                <p><strong>Min Deposit:</strong> {min_deposit}</p>
-                <p><strong>Payments:</strong> <span style="font-size: 11px;">{payments_str}</span></p>
-                <p><strong>Crypto Support:</strong> <span style="color: {crypto_color}; font-weight: bold;">{crypto_str}</span></p>
-            </div>
-            <div style="margin-top: 20px; text-align: center;">
-                <a href="#" style="background: #00e676; color: #fff; padding: 12px 30px; border-radius: 6px; text-decoration: none; font-weight: bold; display: block; font-family: sans-serif; box-shadow: 0 4px 10px rgba(0,230,118,0.3);">Verify & Play</a>
-            </div>
-        </div>
-        """
-    return cards_html
-
-def build():
-    # טעינת הנתונים
-    countries_data = load_processed_data()
-    
-    template_path = "templates/index.html"
-    if not os.path.exists(template_path):
-        print(f"Error: Template file '{template_path}' not found.")
-        return
-
-    with open(template_path, "r", encoding="utf-8") as f:
-        template_content = f.read()
-
-    # יצירת תיקיית הפלט עבור ה-Action
-    os.makedirs("public", exist_ok=True)
-
-    # מעבר על המדינות
-    for country_code, casinos in countries_data.items():
-        country_name = country_code.replace("-", " ").title()
-        
-        cards_html = generate_casino_cards(casinos, country_code)
-        
-        # החלפת מחזיקי המקום
-        page_content = template_content.replace("{{COUNTRY_NAME}}", country_name)
-        page_content = page_content.replace("{{CASINO_CARDS}}", cards_html)
-        
-        # ניקוי ה-HTML
-        page_content = clean_html_template(page_content)
-        
-        # קביעת נתיב הפלט המדויק שלך
-        if country_code == "UNITED-KINGDOM":
-            output_path = "public/index.html"
-        else:
-            country_dir = os.path.join("public", country_code.lower())
-            os.makedirs(country_dir, exist_ok=True)
-            output_path = os.path.join(country_dir, "index.html")
-            
-        with open(output_path, "w", encoding="utf-8") as f:
-            f.write(page_content)
-            
-        print(f"Successfully generated page for {country_name} -> {output_path}")
-
-if __name__ == "__main__":
-    build()
+[
+  {
+    "id": "uk-48695",
+    "brand_name": "Duelz Casino",
+    "is_featured": true,
+    "user_clicks": 620,
+    "official_url": "https://duelz.com",
+    "affiliate_url": "https://casino.org",
+    "license_number": "48695",
+    "last_updated": "2026-07-21",
+    "seo_meta": {
+      "card_title": "Duelz Casino UK Review",
+      "alt_text": "Verified logo"
+    },
+    "features": {
+      "bonus_text": "100% Bonus up to £100 + 100 Free Spins",
+      "wagering_requirement": "30x",
+      "average_rtp": "96.5%",
+      "payout_speed": "1-2 Days",
+      "payment_methods": "Visa, Mastercard, PayPal, Trustly",
+      "crypto_supported": false
+    }
+  },
+  {
+    "id": "uk-39521",
+    "brand_name": "Bet365 Casino",
+    "is_featured": false,
+    "user_clicks": 540,
+    "official_url": "https://bet365.com",
+    "affiliate_url": "",
+    "license_number": "39521",
+    "last_updated": "2026-07-21",
+    "seo_meta": {
+      "card_title": "Bet365 Casino UK Review",
+      "alt_text": "Verified logo"
+    },
+    "features": {
+      "bonus_text": "Stake £10, Get 50 Free Spins",
+      "wagering_requirement": "30x",
+      "average_rtp": "97.2%",
+      "payout_speed": "1-2 Days",
+      "payment_methods": "Visa, Mastercard, Apple Pay, PayPal",
+      "crypto_supported": false
+    }
+  },
+  {
+    "id": "uk-38790",
+    "brand_name": "All British Casino",
+    "is_featured": false,
+    "user_clicks": 490,
+    "official_url": "https://allbritishcasino.com",
+    "affiliate_url": "",
+    "license_number": "38790",
+    "last_updated": "2026-07-21",
+    "seo_meta": {
+      "card_title": "All British Casino UK Review",
+      "alt_text": "Verified logo"
+    },
+    "features": {
+      "bonus_text": "100% Welcome Bonus up to £100",
+      "wagering_requirement": "30x",
+      "average_rtp": "97.1%",
+      "payout_speed": "1-2 Days",
+      "payment_methods": "Visa, Mastercard, Trustly, Neteller",
+      "crypto_supported": false
+    }
+  },
+  {
+    "id": "uk-39326",
+    "brand_name": "PlayOJO",
+    "is_featured": false,
+    "user_clicks": 410,
+    "official_url": "https://playojo.com",
+    "affiliate_url": "",
+    "license_number": "39326",
+    "last_updated": "2026-07-21",
+    "seo_meta": {
+      "card_title": "PlayOJO UK Review",
+      "alt_text": "Verified logo"
+    },
+    "features": {
+      "bonus_text": "Get 50 Free Spins - No Wagering",
+      "wagering_requirement": "30x",
+      "average_rtp": "96.9%",
+      "payout_speed": "1-2 Days",
+      "payment_methods": "Visa, Mastercard, PayPal, MuchBetter",
+      "crypto_supported": false
+    }
+  },
+  {
+    "id": "uk-56438",
+    "brand_name": "Rizk Casino",
+    "is_featured": false,
+    "user_clicks": 380,
+    "official_url": "https://rizk.com",
+    "affiliate_url": "",
+    "license_number": "56438",
+    "last_updated": "2026-07-21",
+    "seo_meta": {
+      "card_title": "Rizk Casino UK Review",
+      "alt_text": "Verified logo"
+    },
+    "features": {
+      "bonus_text": "100% Bonus up to £50 + 50 Spins",
+      "wagering_requirement": "30x",
+      "average_rtp": "96.8%",
+      "payout_speed": "1-2 Days",
+      "payment_methods": "Visa, Mastercard, Trustly, Skrill",
+      "crypto_supported": false
+    }
+  },
+  {
+    "id": "uk-52894",
+    "brand_name": "Casimba Casino",
+    "is_featured": false,
+    "user_clicks": 310,
+    "official_url": "https://casimba.com",
+    "affiliate_url": "",
+    "license_number": "52894",
+    "last_updated": "2026-07-21",
+    "seo_meta": {
+      "card_title": "Casimba Casino UK Review",
+      "alt_text": "Verified logo"
+    },
+    "features": {
+      "bonus_text": "100% Match up to £200 + 50 Spins",
+      "wagering_requirement": "30x",
+      "average_rtp": "96.7%",
+      "payout_speed": "1-2 Days",
+      "payment_methods": "Visa, Mastercard, Skrill, Neteller",
+      "crypto_supported": false
+    }
+  },
+  {
+    "id": "uk-39028",
+    "brand_name": "888casino",
+    "is_featured": false,
+    "user_clicks": 290,
+    "official_url": "https://888casino.com",
+    "affiliate_url": "",
+    "license_number": "39028",
+    "last_updated": "2026-07-21",
+    "seo_meta": {
+      "card_title": "888casino UK Review",
+      "alt_text": "Verified logo"
+    },
+    "features": {
+      "bonus_text": "100% Up To £100 + 88 Free Spins",
+      "wagering_requirement": "30x",
+      "average_rtp": "96.6%",
+      "payout_speed": "1-2 Days",
+      "payment_methods": "Visa, Mastercard, PayPal, Neteller, Skrill",
+      "crypto_supported": false
+    }
+  },
+  {
+    "id": "uk-39260",
+    "brand_name": "Mr Green UK",
+    "is_featured": false,
+    "user_clicks": 210,
+    "official_url": "https://mrgreen.com",
+    "affiliate_url": "",
+    "license_number": "39260",
+    "last_updated": "2026-07-21",
+    "seo_meta": {
+      "card_title": "Mr Green UK UK Review",
+      "alt_text": "Verified logo"
+    },
+    "features": {
+      "bonus_text": "100 Free Spins on Lucky Mr Green",
+      "wagering_requirement": "30x",
+      "average_rtp": "96.4%",
+      "payout_speed": "1-2 Days",
+      "payment_methods": "Visa, Mastercard, Revolut, Trustly",
+      "crypto_supported": false
+    }
+  },
+  {
+    "id": "uk-38750",
+    "brand_name": "Grosvenor Casino",
+    "is_featured": false,
+    "user_clicks": 180,
+    "official_url": "https://grosvenorcasinos.com",
+    "affiliate_url": "",
+    "license_number": "38750",
+    "last_updated": "2026-07-21",
+    "seo_meta": {
+      "card_title": "Grosvenor Casino UK Review",
+      "alt_text": "Verified logo"
+    },
+    "features": {
+      "bonus_text": "Deposit £20, Play With £50",
+      "wagering_requirement": "30x",
+      "average_rtp": "96.2%",
+      "payout_speed": "1-2 Days",
+      "payment_methods": "Visa, Mastercard, PayPal, Paysafecard",
+      "crypto_supported": false
+    }
+  },
+  {
+    "id": "uk-39198",
+    "brand_name": "LeoVegas UK",
+    "is_featured": false,
+    "user_clicks": 120,
+    "official_url": "https://leovegas.co.uk",
+    "affiliate_url": "",
+    "license_number": "39198",
+    "last_updated": "2026-07-21",
+    "seo_meta": {
+      "card_title": "LeoVegas UK UK Review",
+      "alt_text": "Verified logo"
+    },
+    "features": {
+      "bonus_text": "Up to £100 + 50 Free Spins",
+      "wagering_requirement": "30x",
+      "average_rtp": "96.0%",
+      "payout_speed": "1-2 Days",
+      "payment_methods": "Visa, Mastercard, PayPal, Apple Pay",
+      "crypto_supported": false
+    }
+  }
+]
