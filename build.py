@@ -82,13 +82,10 @@ def build_casino_cards(json_path):
                 logo_html = svg_code
                 break
                 
-            if not logo_html:
-            # בדיקה חכמה ללא רגישות לאותיות גדולות/קטנות
+          if not logo_html:
             file_found = False
             if os.path.exists("assets/logos") and search_keys:
-                # שימוש ב-next(iter()) כדי לשלוף את המפתח הראשון בבטחה בלי להשתמש בסוגריים מרובעים
                 primary_key = next(iter(search_keys), "").lower()
-                
                 for file_name in os.listdir("assets/logos"):
                     current_file_lower = file_name.lower()
                     if current_file_lower == f"{primary_key}.png" or current_file_lower.startswith(primary_key):
