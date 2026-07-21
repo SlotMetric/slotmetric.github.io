@@ -12,7 +12,7 @@ def load_processed_data():
 
     for filename in os.listdir(data_dir):
         if filename.endswith(".json"):
-            # שימוש בטוח בשיטת pop כדי למנוע מחיקת תווים ולאתר את המדינה
+            # שימוש בטופס בטוח ב-pop כדי למנוע מחיקת תווים ולאתר את המדינה
             parts = filename.split(".")
             country_code = parts.pop(0).upper()
             filepath = os.path.join(data_dir, filename)
@@ -43,15 +43,15 @@ def extract_clean_keys(casino):
             search_keys.append(full_domain)
             domain_parts = full_domain.split('.')
             if len(domain_parts) > 1:
-                search_keys.append(domain_parts[0])
-                search_keys.append(domain_parts[1])
+                # שימוש בטוח לשליפת חלקי הדומיין ללא סוגריים שנמחקים
+                for p in domain_parts:
+                    search_keys.append(p)
                 
     casino_id = casino.get("id", "").lower().replace(" ", "")
     if casino_id:
         search_keys.append(casino_id)
         
     return list(set(search_keys))
-
 # קוד הציור הגרפי (SVG) האמיתי והרשמי של המותגים שלכם
 EMBEDDED_LOGOS = {
     "bet365": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#005A36' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='22' fill='#FFDF00' text-anchor='middle' dominant-baseline='middle'>bet365</text></svg>",
@@ -69,6 +69,7 @@ EMBEDDED_LOGOS = {
     "wildz": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#4a00e0' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='22' fill='#ff007f' text-anchor='middle' dominant-baseline='middle'>WILDZ</text></svg>",
     "wunderino": "<svg xmlns='http://w3.org' viewBox='0 0 160 50' style='width:100%; height:100%;'><rect width='100%' height='100%' fill='#00bcd4' rx='6'/><text x='50%' y='55%' font-family='sans-serif' font-weight='bold' font-size='18' fill='#ffffff' text-anchor='middle' dominant-baseline='middle'>Wunderino</text></svg>"
 }
+
 def generate_casino_cards(casinos, country_code):
     cards_html = ""
     for casino in casinos:
@@ -81,18 +82,15 @@ def generate_casino_cards(casinos, country_code):
                 logo_html = svg_code
                 break
 
-        # עוקף בטוח ומיושר: בודק התאמה ל-ALL BRITISH לפי המפתחות שנוקו
+        # עוקף בטוח ומיושר ל-ALL BRITISH
         if not logo_html and search_keys and any(x in str(search_keys).lower() for x in ["british", "allbritish"]):
             logo_html = EMBEDDED_LOGOS.get("british")
 
         if not logo_html:
-            # מנגנון הגנה משולש: מונע הופעת 'None' בהולנד ומחזיר את השמות והרקעים הצבעוניים המקוריים
             display_name = casino.get("brand_name", casino.get("name", str(casino_id).upper()))
             if not display_name or display_name.lower() == "none":
                 display_name = str(casino_id).upper()
             logo_html = f'<div style="font-family:\'Montserrat\',sans-serif; font-weight:800; color:#fff; font-size:1.2rem; text-transform:uppercase; text-align:center; width:100%; padding:12px; border-radius:8px; background:{casino.get("color", "#212529")};">{display_name}</div>'
-
-        # שליפת שאר נתוני הבונוסים והדירוגים בדיוק כפי שהיה בקוד המקור היציב שלכם
         rating = casino.get("rating", "N/A")
         bonus = casino.get("bonus", "No Welcome Bonus Available")
         license_val = casino.get("license", "N/A")
@@ -106,7 +104,6 @@ def generate_casino_cards(casinos, country_code):
         crypto_str = "Yes (Crypto)" if crypto_val == "Yes" else "X No (Fiat)"
         crypto_color = "#2f855a" if crypto_val == "Yes" else "#e53e3e"
 
-        # הזרקת ה-HTML המלאה והמקורית של האתר שלכם לכרטיסייה
         cards_html += f"""
         <div class="casino-card" style="border: 2px solid #eef2f5; padding: 25px; margin: 15px; border-radius: 12px; display: inline-block; background: #fff; text-align: left; width: 280px; box-shadow: 0 8px 16px rgba(0,0,0,0.04); vertical-align: top;">
             <div style="text-align: center; height: 70px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
