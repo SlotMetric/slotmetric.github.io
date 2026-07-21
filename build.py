@@ -85,13 +85,13 @@ def build_casino_cards(json_path):
         if not logo_html:
             file_found = False
             if os.path.exists("assets/logos") and search_keys:
-                # לוקח את הדומיין, הופך לאותיות קטנות, ומנקה סיומות כמו .com או .co.uk
                 raw_key = next(iter(search_keys), "").lower()
-                primary_key = raw_key.split(".")[0]
+                # שימוש ב-pop(0) כדי לחלץ את המילה הראשונה בבטחה בלי תווים שנמחקים בצ'אט
+                parts_list = raw_key.split(".")
+                primary_key = parts_list.pop(0)
                 
                 for file_name in os.listdir("assets/logos"):
                     current_file_lower = file_name.lower()
-                    # בודק התאמה מלאה או האם השם בתיקייה מתחיל בשם המותג (למשל 888.png יתאים ל-888casino)
                     if current_file_lower == f"{primary_key}.png" or current_file_lower.startswith(primary_key) or primary_key.startswith(current_file_lower.replace(".png", "")):
                         logo_html = f'<img src="assets/logos/{file_name}" alt="{casino.get("brand_name", "")} logo" style="max-width: 160px; max-height: 50px; object-fit: contain; display: block; margin: 0 auto;">'
                         file_found = True
