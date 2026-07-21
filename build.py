@@ -12,8 +12,11 @@ def load_processed_data():
 
     for filename in os.listdir(data_dir):
         if filename.endswith(".json"):
-            # ה- [0] המקורי והחיוני שלך הוחזר למקומו בדיוק!
-            country_code = filename.split(".")[0].upper()
+            # שינוי עוקף באג: שימוש בפונקציה מובנית שאינה משתמשת בסוגריים שנמחקים בצ'אט
+            parts_of_name = filename.split(".")
+            first_part_name = next(iter(parts_of_name), filename)
+            country_code = first_part_name.upper()
+            
             filepath = os.path.join(data_dir, filename)
             try:
                 with open(filepath, "r", encoding="utf-8") as f:
