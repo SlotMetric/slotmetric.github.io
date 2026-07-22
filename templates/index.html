@@ -65,7 +65,71 @@
             background: rgba(255,255,255,0.1);
         }
 
+        /* Mobile hamburger toggle button */
+        .navbar-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 26px;
+            height: 20px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 1001;
+        }
+        .navbar-toggle span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background: var(--white);
+            border-radius: 2px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .navbar-toggle.active span:nth-child(1) {
+            transform: translateY(8.5px) rotate(45deg);
+        }
+        .navbar-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .navbar-toggle.active span:nth-child(3) {
+            transform: translateY(-8.5px) rotate(-45deg);
+        }
+
+        @media (max-width: 768px) {
+            .navbar-toggle {
+                display: flex;
+            }
+            .navbar-menu {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--primary);
+                flex-direction: column;
+                gap: 0;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+                box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+            }
+            .navbar-menu.active {
+                max-height: 400px;
+            }
+            .navbar-menu .nav-link {
+                width: 100%;
+                box-sizing: border-box;
+                padding: 14px 20px;
+                border-radius: 0;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+            .navbar-menu .nav-link:hover {
+                background: rgba(255,255,255,0.15);
+            }
+        }
+
         header { 
+
             background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
             color: var(--white); 
             padding: 40px 20px; 
@@ -201,13 +265,103 @@
             box-shadow: 0 4px 6px rgba(0,230,118,0.15);
         }
         .btn-play:hover { background: #00c853; }
+
+        /* Filters Styling */
+        .filters-container {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+            min-width: 200px;
+        }
+        .filter-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+        }
+        .filter-select {
+            background: var(--light);
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            color: var(--dark);
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .filter-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
+        }
+        .reset-group {
+            flex: 0;
+            min-width: auto;
+        }
+        .btn-reset {
+            background: transparent;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            height: 44px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-reset:hover {
+            background: #f1f5f9;
+            border-color: #94a3b8;
+            color: var(--dark);
+        }
+        
+        /* Empty state styling */
+        .no-results-msg {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            color: var(--gray);
+            font-size: 1.1rem;
+            display: none;
+        }
     </style>
 </head>
 <body>
 
     <nav class="navbar">
         <a href="/" class="navbar-brand">SlotMetric</a>
-        <div class="navbar-menu">
+        <button id="navbar-toggle" class="navbar-toggle" aria-label="Toggle menu" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div id="navbar-menu" class="navbar-menu">
             <a href="/" class="nav-link">🇬🇧 UK Market</a>
             <a href="/de/" class="nav-link">🇩🇪 Germany</a>
             <a href="/nl/" class="nav-link">🇳🇱 Netherlands</a>
@@ -216,13 +370,15 @@
         </div>
     </nav>
 
+
     <header>
         <h1>SlotMetric Database</h1>
         <p>Verified Regulatory Directory for {{COUNTRY_NAME}}</p>
     </header>
 
     <main class="container">
-<!-- SLOT MACHINE WIDGET START -->
+        
+        <!-- SLOT MACHINE WIDGET START -->
     <div style="margin: 30px auto; max-width: 500px; background: #1a365d; border: 4px solid #ffdf00; border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(26,54,93,0.15); text-align: center; color: #fff; font-family: 'Montserrat', sans-serif;">
         <h3 style="margin-top: 0; color: #ffdf00; font-size: 1.4rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">🎰 Let Luck Choose Your Casino! 🎰</h3>
         <p style="font-size: 0.9rem; color: #e2e8f0; margin-bottom: 20px;">Can't decide? Let our lucky slot machine pick the best option for you from the list below!</p>
@@ -248,146 +404,318 @@
     </div>
     <!-- SLOT MACHINE WIDGET END -->
         
+        
+        <!-- Filters Section -->
+        <div class="filters-container">
+            <div class="filter-group">
+                <label for="rating-filter">
+                    <span style="margin-right: 6px;">⭐</span> Minimum Rating
+                </label>
+                <select id="rating-filter" class="filter-select">
+                    <option value="all">Show All Ratings</option>
+                    <option value="8.0">8.0+ Stars</option>
+                    <option value="8.5">8.5+ Stars</option>
+                    <option value="9.0">9.0+ Stars</option>
+                    <option value="9.5">9.5+ Stars</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="crypto-filter">
+                    <span style="margin-right: 6px;">🪙</span> Payment Support
+                </label>
+                <select id="crypto-filter" class="filter-select">
+                    <option value="all">All Payment Types</option>
+                    <option value="crypto">Crypto Supported Only</option>
+                    <option value="fiat">Fiat Only</option>
+                </select>
+            </div>
+            
+            <div class="filter-group reset-group">
+                <button id="reset-filters" class="btn-reset">
+                    🔄 Reset Filters
+                </button>
+            </div>
+        </div>
+
         <div class="grid">
             {{CASINO_CARDS}}
         </div>
     </main>
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const spinButton = document.getElementById("spin-button");
-    const slotReel = document.getElementById("slot-reel");
-    const slotWinner = document.getElementById("slot-winner");
-    const winnerLink = document.getElementById("winner-link");
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navToggle = document.getElementById('navbar-toggle');
+            const navMenu = document.getElementById('navbar-menu');
 
-    if (!spinButton || !slotReel) return;
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', () => {
+                    const isActive = navMenu.classList.toggle('active');
+                    navToggle.classList.toggle('active', isActive);
+                    navToggle.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+                });
 
-    spinButton.addEventListener("mousedown", () => spinButton.style.transform = "scale(0.95)");
-    spinButton.addEventListener("mouseup", () => spinButton.style.transform = "scale(1)");
+                // Close menu when a nav link is clicked (better mobile UX)
+                navMenu.querySelectorAll('.nav-link').forEach(link => {
+                    link.addEventListener('click', () => {
+                        navMenu.classList.remove('active');
+                        navToggle.classList.remove('active');
+                        navToggle.setAttribute('aria-expanded', 'false');
+                    });
+                });
 
-    spinButton.addEventListener("click", function() {
-        const liveCards = document.querySelectorAll(".casino-card");
-        if (liveCards.length === 0) {
-            slotReel.innerHTML = '<div style="height:70px; display:flex; align-items:center; justify-content:center; color:#e53e3e;">No casinos available</div>';
-            return;
-        }
+                // Close menu when clicking outside of it
+                document.addEventListener('click', (event) => {
+                    const isClickInsideNav = navToggle.contains(event.target) || navMenu.contains(event.target);
+                    if (!isClickInsideNav && navMenu.classList.contains('active')) {
+                        navMenu.classList.remove('active');
+                        navToggle.classList.remove('active');
+                        navToggle.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            }
 
-        const casinoList = [];
-        liveCards.forEach(card => {
-            let name = "Casino";
+            const ratingFilter = document.getElementById('rating-filter');
+
+            const cryptoFilter = document.getElementById('crypto-filter');
+            const resetBtn = document.getElementById('reset-filters');
+            const cards = document.querySelectorAll('.casino-card');
             
-            // שולף את שם הטקסט למקרה שנצטרך להציג אותו בכפתור למטה
-            const svgText = card.querySelector("svg text");
-            const textLogo = card.querySelector("div[style*='font-family']");
-            const imgLogo = card.querySelector("img");
-            const playButton = card.querySelector("a[style*='background']");
+            // Create "No Results" message element dynamically if it doesn't exist
+            const grid = document.querySelector('.grid');
+            const noResults = document.createElement('div');
+            noResults.className = 'no-results-msg';
+            noResults.innerHTML = `
+                <div style="font-size: 3rem; margin-bottom: 15px;">🔍</div>
+                <h3>No casinos found matching your filters</h3>
+                <p style="font-size: 0.9rem; margin: 5px 0 0 0;">Try adjusting your rating or payment options.</p>
+            `;
+            grid.appendChild(noResults);
 
-            if (svgText) {
-                name = svgText.textContent.trim();
-            } else if (textLogo) {
-                name = textLogo.textContent.trim();
-            } else if (imgLogo && imgLogo.alt) {
-                name = imgLogo.alt.replace(" logo", "").trim();
-            }
+            // Pre-parse cards data for high performance
+            const cardData = Array.from(cards).map(card => {
+                // Parse rating
+                let rating = 10.0; // Default for Sponsored/Featured
+                const scoreTag = card.querySelector('.score-tag');
+                if (scoreTag) {
+                    const match = scoreTag.textContent.match(/Rating:\s*([0-9.]+)\/10/);
+                    if (match) {
+                        rating = parseFloat(match[1]);
+                    }
+                } else if (card.querySelector('.sponsored-tag')) {
+                    rating = 10.0; // Sponsored counts as 10.0
+                }
 
-            // 🎯 השינוי הגדול: שולף את ה-HTML הפנימי של הלוגו (ה-SVG או התיבה הצבעונית)
-            const logoContainer = card.querySelector("div[style*='text-align: center; height: 70px;']");
-            let visualHTML = "";
-            if (logoContainer) {
-                visualHTML = logoContainer.innerHTML.trim();
-            } else {
-                visualHTML = `<div style="font-family:'Montserrat',sans-serif; font-weight:800; color:#1a365d; font-size:1.3rem;">${name}</div>`;
-            }
+                // Parse Crypto Support
+                let hasCrypto = false;
+                const featureItems = card.querySelectorAll('.feature-item');
+                featureItems.forEach(item => {
+                    if (item.textContent.includes('Crypto Support')) {
+                        const strong = item.querySelector('strong');
+                        if (strong) {
+                            if (strong.classList.contains('crypto-yes') || 
+                                strong.textContent.includes('✅') || 
+                                strong.textContent.toLowerCase().includes('yes')) {
+                                hasCrypto = true;
+                            }
+                        }
+                    }
+                });
 
-            // שולף את קישור ה-Verify & Play
-            let link = "#";
-            if (playButton) {
-                link = playButton.getAttribute("href") || "#";
-            } else {
-                const allLinks = card.querySelectorAll("a");
-                if (allLinks.length > 0) {
-                    link = allLinks[allLinks.length - 1].getAttribute("href") || "#";
+                return {
+                    element: card,
+                    rating: rating,
+                    hasCrypto: hasCrypto
+                };
+            });
+
+            function applyFilters() {
+                const selectedRating = ratingFilter.value;
+                const selectedCrypto = cryptoFilter.value;
+                let visibleCount = 0;
+
+                cardData.forEach(data => {
+                    let ratingMatch = true;
+                    let cryptoMatch = true;
+
+                    // Apply Rating filter
+                    if (selectedRating !== 'all') {
+                        const minRating = parseFloat(selectedRating);
+                        ratingMatch = data.rating >= minRating;
+                    }
+
+                    // Apply Crypto filter
+                    if (selectedCrypto === 'crypto') {
+                        cryptoMatch = data.hasCrypto === true;
+                    } else if (selectedCrypto === 'fiat') {
+                        cryptoMatch = data.hasCrypto === false;
+                    }
+
+                    if (ratingMatch && cryptoMatch) {
+                        data.element.style.display = 'flex';
+                        visibleCount++;
+                    } else {
+                        data.element.style.display = 'none';
+                    }
+                });
+
+                // Show/hide empty state
+                if (visibleCount === 0) {
+                    noResults.style.display = 'block';
+                } else {
+                    noResults.style.display = 'none';
                 }
             }
 
-            casinoList.push({ name: name, visualHTML: visualHTML, link: link, originalCard: card });
+            // Event Listeners
+            ratingFilter.addEventListener('change', applyFilters);
+            cryptoFilter.addEventListener('change', applyFilters);
+            
+            resetBtn.addEventListener('click', () => {
+                ratingFilter.value = 'all';
+                cryptoFilter.value = 'all';
+                applyFilters();
+            });
         });
+    </script>
 
-        slotWinner.style.display = "none";
-        spinButton.disabled = true;
-        spinButton.style.opacity = "0.6";
-        spinButton.innerText = "Spinning...";
 
-        // הכנת רשימת הלוגואים הצבעוניים בתוך הגליל
-        let reelHTML = "";
-        const totalItems = 30; 
-        for (let i = 0; i < totalItems; i++) {
-            const casino = casinoList[i % casinoList.length];
-            // מציב את ה-visualHTML המקורי (ה-SVG הצבעוני) בתוך קוביית האנימציה, עם הגבלת גובה מדויקת של 50 פיקסלים
-            reelHTML += `
-            <div style="height: 70px; display: flex; align-items: center; justify-content: center; width: 100%; box-sizing: border-box; padding: 10px 20px;">
-                <div style="width: 160px; height: 50px; display: flex; align-items: center; justify-content: center;">
-                    ${casino.visualHTML}
-                </div>
-            </div>`;
-        }
-        slotReel.innerHTML = reelHTML;
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const spinButton = document.getElementById("spin-button");
+        const slotReel = document.getElementById("slot-reel");
+        const slotWinner = document.getElementById("slot-winner");
+        const winnerLink = document.getElementById("winner-link");
 
-        let currentTop = 0;
-        let speed = 35; // סחרור מהיר יותר לאפקט קזינו אמיתי
-        let duration = 0;
-        const targetDuration = 2500; 
-        
-        liveCards.forEach(c => {
-            c.style.border = "2px solid #eef2f5";
-            c.style.boxShadow = "0 8px 16px rgba(0,0,0,0.04)";
-        });
+        if (!spinButton || !slotReel) return;
 
-        function animateReel() {
-            currentTop -= speed;
-            if (Math.abs(currentTop) >= (totalItems - 1) * 70) {
-                currentTop = 0;
-            }
-            slotReel.style.top = currentTop + "px";
-            duration += 30;
+        spinButton.addEventListener("mousedown", () => spinButton.style.transform = "scale(0.95)");
+        spinButton.addEventListener("mouseup", () => spinButton.style.transform = "scale(1)");
 
-            if (duration > targetDuration * 0.7) {
-                speed = Math.max(2, speed - 1);
+        spinButton.addEventListener("click", function() {
+            // Select only the currently visible cards (not hidden by our filters)
+            const liveCards = Array.from(document.querySelectorAll(".casino-card")).filter(card => card.style.display !== "none");
+            if (liveCards.length === 0) {
+                slotReel.innerHTML = '<div style="height:70px; display:flex; align-items:center; justify-content:center; color:#e53e3e;">No casinos available</div>';
+                return;
             }
 
-            if (duration < targetDuration || speed > 2) {
-                setTimeout(animateReel, 30);
-            } else {
-                const winnerIndex = Math.floor(Math.random() * casinoList.length);
-                const winner = casinoList[winnerIndex];
+            const casinoList = [];
+            liveCards.forEach(card => {
+                let name = "Casino";
+                
+                // שולף את שם הטקסט למקרה שנצטרך להציג אותו בכפתור למטה
+                const svgText = card.querySelector("svg text");
+                const textLogo = card.querySelector("div[style*='font-family']");
+                const imgLogo = card.querySelector("img");
+                const playButton = card.querySelector("a[style*='background']");
 
-                // מיישרים את הגליל ומציגים את הלוגו המנצח והצבעוני במרכז החלון הלבן
-                slotReel.innerHTML = `
-                <div style="height: 70px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                if (svgText) {
+                    name = svgText.textContent.trim();
+                } else if (textLogo) {
+                    name = textLogo.textContent.trim();
+                } else if (imgLogo && imgLogo.alt) {
+                    name = imgLogo.alt.replace(" logo", "").trim();
+                }
+
+                // 🎯 השינוי הגדול: שולף את ה-HTML הפנימי של הלוגו (ה-SVG או התיבה הצבעונית)
+                const logoContainer = card.querySelector("div[style*='text-align: center; height: 70px;']");
+                let visualHTML = "";
+                if (logoContainer) {
+                    visualHTML = logoContainer.innerHTML.trim();
+                } else {
+                    visualHTML = `<div style="font-family:'Montserrat',sans-serif; font-weight:800; color:#1a365d; font-size:1.3rem;">${name}</div>`;
+                }
+
+                // שולף את קישור ה-Verify & Play
+                let link = "#";
+                if (playButton) {
+                    link = playButton.getAttribute("href") || "#";
+                } else {
+                    const allLinks = card.querySelectorAll("a");
+                    if (allLinks.length > 0) {
+                        link = allLinks[allLinks.length - 1].getAttribute("href") || "#";
+                    }
+                }
+
+                casinoList.push({ name: name, visualHTML: visualHTML, link: link, originalCard: card });
+            });
+
+            slotWinner.style.display = "none";
+            spinButton.disabled = true;
+            spinButton.style.opacity = "0.6";
+            spinButton.innerText = "Spinning...";
+
+            // הכנת רשימת הלוגואים הצבעוניים בתוך הגליל
+            let reelHTML = "";
+            const totalItems = 30; 
+            for (let i = 0; i < totalItems; i++) {
+                const casino = casinoList[i % casinoList.length];
+                // מציב את ה-visualHTML המקורי (ה-SVG הצבעוני) בתוך קוביית האנימציה, עם הגבלת גובה מדויקת של 50 פיקסלים
+                reelHTML += `
+                <div style="height: 70px; display: flex; align-items: center; justify-content: center; width: 100%; box-sizing: border-box; padding: 10px 20px;">
                     <div style="width: 160px; height: 50px; display: flex; align-items: center; justify-content: center;">
-                        ${winner.visualHTML}
+                        ${casino.visualHTML}
                     </div>
                 </div>`;
-                slotReel.style.top = "0px";
-
-                winnerLink.href = winner.link;
-                winnerLink.innerText = `🎰 Play at ${winner.name} Now!`;
-                slotWinner.style.display = "block";
-
-                winner.originalCard.style.border = "3px solid #ffdf00";
-                winner.originalCard.style.boxShadow = "0 0 20px rgba(255,223,0,0.4)";
-                winner.originalCard.scrollIntoView({ behavior: "smooth", block: "center" });
-
-                spinButton.disabled = false;
-                spinButton.style.opacity = "1";
-                spinButton.innerText = "Spin Again";
             }
-        }
+            slotReel.innerHTML = reelHTML;
 
-        animateReel();
+            let currentTop = 0;
+            let speed = 35; // סחרור מהיר יותר לאפקט קזינו אמיתי
+            let duration = 0;
+            const targetDuration = 2500; 
+            
+            liveCards.forEach(c => {
+                c.style.border = "2px solid #eef2f5";
+                c.style.boxShadow = "0 8px 16px rgba(0,0,0,0.04)";
+            });
+
+            function animateReel() {
+                currentTop -= speed;
+                if (Math.abs(currentTop) >= (totalItems - 1) * 70) {
+                    currentTop = 0;
+                }
+                slotReel.style.top = currentTop + "px";
+                duration += 30;
+
+                if (duration > targetDuration * 0.7) {
+                    speed = Math.max(2, speed - 1);
+                }
+
+                if (duration < targetDuration || speed > 2) {
+                    setTimeout(animateReel, 30);
+                } else {
+                    const winnerIndex = Math.floor(Math.random() * casinoList.length);
+                    const winner = casinoList[winnerIndex];
+
+                    // מיישרים את הגליל ומציגים את הלוגו המנצח והצבעוני במרכז החלון הלבן
+                    slotReel.innerHTML = `
+                    <div style="height: 70px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                        <div style="width: 160px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                            ${winner.visualHTML}
+                        </div>
+                    </div>`;
+                    slotReel.style.top = "0px";
+
+                    winnerLink.href = winner.link;
+                    winnerLink.innerText = `🎰 Play at ${winner.name} Now!`;
+                    slotWinner.style.display = "block";
+
+                    winner.originalCard.style.border = "3px solid #ffdf00";
+                    winner.originalCard.style.boxShadow = "0 0 20px rgba(255,223,0,0.4)";
+                    winner.originalCard.scrollIntoView({ behavior: "smooth", block: "center" });
+
+                    spinButton.disabled = false;
+                    spinButton.style.opacity = "1";
+                    spinButton.innerText = "Spin Again";
+                }
+            }
+
+            animateReel();
+        });
     });
-});
-</script>
-    
+    </script>
+
 </body>
 </html>
