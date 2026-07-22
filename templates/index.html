@@ -222,6 +222,34 @@
     </header>
 
     <main class="container">
+
+            <!-- SLOT MACHINE WIDGET START -->
+    <div style="margin: 30px auto; max-width: 500px; background: #1a202c; border: 4px solid #ffdf00; border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; color: #fff; font-family: 'Montserrat', sans-serif;">
+        <h3 style="margin-top: 0; color: #ffdf00; font-size: 1.4rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">🎰 Let Luck Choose Your Casino! 🎰</h3>
+        <p style="font-size: 0.9rem; color: #a0aec0; margin-bottom: 20px;">Can't decide? Let our lucky slot machine pick the best option for you from the list below!</p>
+        
+        <!-- Slot Window Display -->
+        <div style="background: #2d3748; border: 3px solid #4a5568; border-radius: 8px; height: 70px; overflow: hidden; position: relative; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 4px 10px rgba(0,0,0,0.4);">
+            <div id="slot-reel" style="position: absolute; top: 0; width: 100%; transition: top 0.1s ease-out; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <div style="height: 70px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold; color: #cbd5e0;">???</div>
+            </div>
+            <!-- Visual Overlay Lines to give Slot effect -->
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 15px; background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent); pointer-events: none;"></div>
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 15px; background: linear-gradient(to top, rgba(0,0,0,0.4), transparent); pointer-events: none;"></div>
+        </div>
+
+        <!-- Action Button -->
+        <button id="spin-button" style="background: linear-gradient(135deg, #ffdf00 0%, #ffb700 100%); color: #1a202c; border: none; padding: 14px 35px; font-size: 1.1rem; font-weight: bold; border-radius: 30px; cursor: pointer; box-shadow: 0 4px 15px rgba(255,223,0,0.4); text-transform: uppercase; letter-spacing: 1px; transition: transform 0.1s, box-shadow: 0.2s;">Spin the Reel</button>
+        
+        <!-- Winner Container (Hidden initially) -->
+        <div id="slot-winner" style="display: none; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #4a5568;">
+            <p style="color: #68d391; font-weight: bold; font-size: 1.1rem; margin-bottom: 12px;">🎉 Congratulations! Your lucky choice is here:</p>
+            <a id="winner-link" href="#" style="background: #00e676; color: #fff; padding: 12px 25px; border-radius: 6px; text-decoration: none; font-weight: bold; display: inline-block; box-shadow: 0 4px 10px rgba(0,230,118,0.3); font-size: 1rem; transition: background 0.2s;">Claim Bonus & Play Now</a>
+        </div>
+    </div>
+    <!-- SLOT MACHINE WIDGET END -->
+
+        
         <div class="grid">
             {{CASINO_CARDS}}
         </div>
