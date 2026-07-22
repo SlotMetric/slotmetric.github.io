@@ -262,61 +262,82 @@ document.addEventListener("DOMContentLoaded", function() {
 
     if (!spinButton || !slotReel) return;
 
-    // אפקט ויזואלי של לחיצה על הכפתור
     spinButton.addEventListener("mousedown", () => spinButton.style.transform = "scale(0.95)");
     spinButton.addEventListener("mouseup", () => spinButton.style.transform = "scale(1)");
 
     spinButton.addEventListener("click", function() {
-        // 1. סריקה דינמית של הכרטיסיות שקיימות כרגע על המסך
         const liveCards = document.querySelectorAll(".casino-card");
         if (liveCards.length === 0) {
             slotReel.innerHTML = '<div style="height:70px; display:flex; align-items:center; justify-content:center; color:#e53e3e;">No casinos available</div>';
             return;
         }
 
-        // 2. חילוץ השמות והקישורים מתוך כרטיסיות ה-HTML הקיימות
         const casinoList = [];
         liveCards.forEach(card => {
-            // שולף את השם מתוך הריבוע הצבעוני או תמונת הלוגו
             let name = "Casino";
+            
+            // שולף את שם הטקסט למקרה שנצטרך להציג אותו בכפתור למטה
+            const svgText = card.querySelector("svg text");
             const textLogo = card.querySelector("div[style*='font-family']");
             const imgLogo = card.querySelector("img");
             const playButton = card.querySelector("a[style*='background']");
 
-            if (textLogo) {
+            if (svgText) {
+                name = svgText.textContent.trim();
+            } else if (textLogo) {
                 name = textLogo.textContent.trim();
             } else if (imgLogo && imgLogo.alt) {
                 name = imgLogo.alt.replace(" logo", "").trim();
             }
 
-            // שולף את קישור האפיליאייט הייחודי של אותה כרטיסייה
-            const link = playButton ? playButton.getAttribute("href") : "#";
+            // 🎯 השינוי הגדול: שולף את ה-HTML הפנימי של הלוגו (ה-SVG או התיבה הצבעונית)
+            const logoContainer = card.querySelector("div[style*='text-align: center; height: 70px;']");
+            let visualHTML = "";
+            if (logoContainer) {
+                visualHTML = logoContainer.innerHTML.trim();
+            } else {
+                visualHTML = `<div style="font-family:'Montserrat',sans-serif; font-weight:800; color:#1a365d; font-size:1.3rem;">${name}</div>`;
+            }
 
-            casinoList.push({ name: name, link: link, originalCard: card });
+            // שולף את קישור ה-Verify & Play
+            let link = "#";
+            if (playButton) {
+                link = playButton.getAttribute("href") || "#";
+            } else {
+                const allLinks = card.querySelectorAll("a");
+                if (allLinks.length > 0) {
+                    link = allLinks[allLinks.length - 1].getAttribute("href") || "#";
+                }
+            }
+
+            casinoList.push({ name: name, visualHTML: visualHTML, link: link, originalCard: card });
         });
 
-        // 3. הכנת רשימת השמות בתוך הגליל לצורך האנימציה
         slotWinner.style.display = "none";
         spinButton.disabled = true;
         spinButton.style.opacity = "0.6";
         spinButton.innerText = "Spinning...";
 
-        // משכפלים את הרשימה כדי ליצור אפקט של סחרור ארוך
+        // הכנת רשימת הלוגואים הצבעוניים בתוך הגליל
         let reelHTML = "";
-        const totalItems = 20; 
+        const totalItems = 30; 
         for (let i = 0; i < totalItems; i++) {
             const casino = casinoList[i % casinoList.length];
-            reelHTML += `<div style="height: 70px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold; width: 100%; text-transform: uppercase; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">${casino.name}</div>`;
+            // מציב את ה-visualHTML המקורי (ה-SVG הצבעוני) בתוך קוביית האנימציה, עם הגבלת גובה מדויקת של 50 פיקסלים
+            reelHTML += `
+            <div style="height: 70px; display: flex; align-items: center; justify-content: center; width: 100%; box-sizing: border-box; padding: 10px 20px;">
+                <div style="width: 160px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                    ${casino.visualHTML}
+                </div>
+            </div>`;
         }
         slotReel.innerHTML = reelHTML;
 
-        // 4. הרצת אנימציית הסחרור של הגלגל
         let currentTop = 0;
-        let speed = 25; // מהירות התחלתית גבוהה
+        let speed = 35; // סחרור מהיר יותר לאפקט קזינו אמיתי
         let duration = 0;
-        const targetDuration = 2500; // 2.5 שניות של סחרור
+        const targetDuration = 2500; 
         
-        // מנקים הדגשות קודמות מכרטיסיות באתר
         liveCards.forEach(c => {
             c.style.border = "2px solid #eef2f5";
             c.style.boxShadow = "0 8px 16px rgba(0,0,0,0.04)";
@@ -324,14 +345,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
         function animateReel() {
             currentTop -= speed;
-            // אם הגענו לסוף הרשימה המשוכפלת, חוזרים להתחלה כדי שהסחרור יראה אינסופי
             if (Math.abs(currentTop) >= (totalItems - 1) * 70) {
                 currentTop = 0;
             }
             slotReel.style.top = currentTop + "px";
             duration += 30;
 
-            // האטה הדרגתית לקראת הסוף
             if (duration > targetDuration * 0.7) {
                 speed = Math.max(2, speed - 1);
             }
@@ -339,25 +358,26 @@ document.addEventListener("DOMContentLoaded", function() {
             if (duration < targetDuration || speed > 2) {
                 setTimeout(animateReel, 30);
             } else {
-                // 5. עצירה ובחירת המנצח האקראי הסופי
                 const winnerIndex = Math.floor(Math.random() * casinoList.length);
                 const winner = casinoList[winnerIndex];
 
-                // מיישרים את הגליל ויזואלית על המנצח
-                slotReel.innerHTML = `<div style="height: 70px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 800; color: #ffdf00; text-shadow: 0 0 10px rgba(255,223,0,0.6);">${winner.name}</div>`;
+                // מיישרים את הגליל ומציגים את הלוגו המנצח והצבעוני במרכז החלון הלבן
+                slotReel.innerHTML = `
+                <div style="height: 70px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                    <div style="width: 160px; height: 50px; display: flex; align-items: center; justify-content: center;">
+                        ${winner.visualHTML}
+                    </div>
+                </div>`;
                 slotReel.style.top = "0px";
 
-                // 6. הצגת כפתור הזכייה הייעודי למשתמש
                 winnerLink.href = winner.link;
                 winnerLink.innerText = `🎰 Play at ${winner.name} Now!`;
                 slotWinner.style.display = "block";
 
-                // 7. גיימיפיקציה: הדגשת הכרטיסייה האמיתית שנבחרה למטה בדף עם אפקט זהב!
                 winner.originalCard.style.border = "3px solid #ffdf00";
                 winner.originalCard.style.boxShadow = "0 0 20px rgba(255,223,0,0.4)";
                 winner.originalCard.scrollIntoView({ behavior: "smooth", block: "center" });
 
-                // החזרת הכפתור למצב פעיל
                 spinButton.disabled = false;
                 spinButton.style.opacity = "1";
                 spinButton.innerText = "Spin Again";
